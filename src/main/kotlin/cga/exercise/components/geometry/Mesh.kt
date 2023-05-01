@@ -25,25 +25,23 @@ class Mesh(vertexdata: FloatArray, indexdata: IntArray, attributes: Array<Vertex
         val vertices = vertexdata
         val indices = indexdata
         // todo Aufgabe 1.2.2 (shovel geometry data to GPU and tell OpenGL how to interpret it)
-        val vaoId = glGenVertexArrays()
+        vaoId = glGenVertexArrays()
         glBindVertexArray(vaoId)
 
-        val vboId = glGenBuffers()
+        vboId = glGenBuffers()
         glBindBuffer(GL_ARRAY_BUFFER,vboId)
         glBufferData(GL_ARRAY_BUFFER,vertices, GL_STATIC_DRAW)
-        for ((index,attributes) in attributes.withIndex()){
-            glEnableVertexAttribArray(0)
+        var i=0
+        for (item in attributes ){
+            glEnableVertexAttribArray(i)
 
-            GL20.glVertexAttribPointer(index,attributes.n, GL_FLOAT,false,attributes.stride,attributes.offset)
+            GL20.glVertexAttribPointer(i,item.n, GL_FLOAT,false,item.stride,item.offset)
+            i++
         }
 
-
-        val iboId = glGenBuffers()
+        iboId = glGenBuffers()
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,iboId)
         GL15.glBufferData(GL_ELEMENT_ARRAY_BUFFER,indices, GL_STATIC_DRAW)
-
-
-
 
     }
 

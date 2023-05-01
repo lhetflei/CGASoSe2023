@@ -18,6 +18,7 @@ class Scene(private val window: GameWindow) {
 
     private val simpleMesh: Mesh
 
+
     //scene setup
     init {
         val vertices = floatArrayOf(
@@ -35,17 +36,19 @@ class Scene(private val window: GameWindow) {
         )
 
         // todo
-        val vertexAttribute =arrayOf<VertexAttribute>(VertexAttribute(3, GL_FLOAT,3,3))
-        simpleMesh = Mesh(vertices, indices,vertexAttribute)
+
         //initial opengl state
         glClearColor(0.0f, 0.533f, 1.0f, 1.0f); GLError.checkThrow()
-
+        val vertexAttribute =arrayOf<VertexAttribute>(VertexAttribute(3, GL_FLOAT,24,0),VertexAttribute(3, GL_FLOAT,24,12))
+        simpleMesh = Mesh(vertices, indices,vertexAttribute)
     }
 
     fun render(dt: Float, t: Float) {
         glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
         staticShader.use()
+
         simpleMesh.render()
+
     }
 
     fun update(dt: Float, t: Float) {}
@@ -54,7 +57,9 @@ class Scene(private val window: GameWindow) {
 
     fun onMouseMove(xpos: Double, ypos: Double) {}
 
-    fun cleanup() {}
+    fun cleanup() {
+        simpleMesh.cleanup()
+    }
 
     /**
      * enables culling of specified faces
