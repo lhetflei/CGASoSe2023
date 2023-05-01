@@ -1,8 +1,13 @@
 package cga.exercise.game
 
+import cga.exercise.components.geometry.Mesh
+import cga.exercise.components.geometry.VertexAttribute
 import cga.exercise.components.shader.ShaderProgram
 import cga.framework.GLError
 import cga.framework.GameWindow
+import org.lwjgl.opengl.GL11
+import org.lwjgl.opengl.GL15
+import org.lwjgl.opengl.GL20
 import org.lwjgl.opengl.GL30.*
 
 /**
@@ -11,7 +16,7 @@ import org.lwjgl.opengl.GL30.*
 class Scene(private val window: GameWindow) {
     private val staticShader: ShaderProgram = ShaderProgram("assets/shaders/simple_vert.glsl", "assets/shaders/simple_frag.glsl")
 
-    //private val simpleMesh: Mesh
+    private val simpleMesh: Mesh
 
     //scene setup
     init {
@@ -30,15 +35,17 @@ class Scene(private val window: GameWindow) {
         )
 
         // todo
-
+        val vertexAttribute =arrayOf<VertexAttribute>(VertexAttribute(3, GL_FLOAT,3,3))
+        simpleMesh = Mesh(vertices, indices,vertexAttribute)
         //initial opengl state
         glClearColor(0.0f, 0.533f, 1.0f, 1.0f); GLError.checkThrow()
+
     }
 
     fun render(dt: Float, t: Float) {
         glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
         staticShader.use()
-
+        simpleMesh.render()
     }
 
     fun update(dt: Float, t: Float) {}

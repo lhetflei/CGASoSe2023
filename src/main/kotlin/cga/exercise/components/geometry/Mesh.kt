@@ -1,5 +1,7 @@
 package cga.exercise.components.geometry
 
+import org.lwjgl.opengl.GL15
+import org.lwjgl.opengl.GL20
 import org.lwjgl.opengl.GL30.*
 
 /**
@@ -17,10 +19,32 @@ class Mesh(vertexdata: FloatArray, indexdata: IntArray, attributes: Array<Vertex
     private var vaoId = 0
     private var vboId = 0
     private var iboId = 0
-    private var indexcount = 0
+    private var indexcount = indexdata.size
 
     init {
+        val vertices = vertexdata
+        val indices = indexdata
         // todo Aufgabe 1.2.2 (shovel geometry data to GPU and tell OpenGL how to interpret it)
+        val vaoId = glGenVertexArrays()
+        glBindVertexArray(vaoId)
+
+        val vboId = glGenBuffers()
+        glBindBuffer(GL_ARRAY_BUFFER,vboId)
+        glBufferData(GL_ARRAY_BUFFER,vertices, GL_STATIC_DRAW)
+        for ((index,attributes) in attributes.withIndex()){
+            glEnableVertexAttribArray(0)
+
+            GL20.glVertexAttribPointer(index,attributes.n, GL_FLOAT,false,attributes.stride,attributes.offset)
+        }
+
+
+        val iboId = glGenBuffers()
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,iboId)
+        GL15.glBufferData(GL_ELEMENT_ARRAY_BUFFER,indices, GL_STATIC_DRAW)
+
+
+
+
     }
 
     /**
@@ -28,6 +52,10 @@ class Mesh(vertexdata: FloatArray, indexdata: IntArray, attributes: Array<Vertex
      */
     fun render() {
         // todo
+        glBindVertexArray(vaoId)
+        //glDrawArrays(GL_TRIANGLES,0,indexcount)
+        glDrawElements(GL_TRIANGLES,indexcount, GL_UNSIGNED_INT,0)
+        glBindVertexArray(0)
     }
 
     /**
