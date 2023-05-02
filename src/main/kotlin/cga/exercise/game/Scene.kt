@@ -5,10 +5,9 @@ import cga.exercise.components.geometry.VertexAttribute
 import cga.exercise.components.shader.ShaderProgram
 import cga.framework.GLError
 import cga.framework.GameWindow
-import org.lwjgl.opengl.GL11
-import org.lwjgl.opengl.GL15
-import org.lwjgl.opengl.GL20
+import cga.framework.OBJLoader.loadOBJ
 import org.lwjgl.opengl.GL30.*
+
 
 /**
  * Created 29.03.2023.
@@ -34,6 +33,7 @@ class Scene(private val window: GameWindow) {
             0, 2, 4,
             4, 2, 3
         )*/
+
         val vertices = floatArrayOf(
                 //L
                 -0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
@@ -75,12 +75,35 @@ class Scene(private val window: GameWindow) {
                 16,18,17,
                 17,18,19
         )
+
         // todo
-        enableFaceCulling(GL_CW, GL_FRONT)
+        val res = loadOBJ("assets/models/sphere.obj", true, true)
+
+        //Get the first mesh of the first object
+
+        //Get the first mesh of the first object
+        val objMesh = res.objects[0].meshes[0]
+//Create the mesh
+//Create the mesh
+        val stride = 8 * 4
+        val vertexAttributes = arrayOf<VertexAttribute>(VertexAttribute(3,GL_FLOAT, stride, 0)
+                ,VertexAttribute(3, GL_FLOAT, stride, (3 * 4).toLong())
+                ,VertexAttribute(3, GL_FLOAT, stride, (5 * 4).toLong()))
+
+       // vertexAttributes[0] = VertexAttribute(3, GL_FLOAT, stride, 0) //position attribute
+
+        //vertexAttributes[1] = VertexAttribute(3, GL_FLOAT, stride, (5 * 4).toLong()) //normal attribute
+
+        simpleMesh = Mesh(objMesh.vertexData, objMesh.indexData, vertexAttributes)
+
+
+        //enableFaceCulling(GL_CW, GL_FRONT)
+        enableDepthTest(GL_LESS)
+
         //initial opengl state
         glClearColor(0.0f, 0.533f, 1.0f, 1.0f); GLError.checkThrow()
         val vertexAttribute =arrayOf<VertexAttribute>(VertexAttribute(3, GL_FLOAT,24,0),VertexAttribute(3, GL_FLOAT,24,12))
-        simpleMesh = Mesh(vertices, indices,vertexAttribute)
+        //simpleMesh = Mesh(vertices, indices,vertexAttribute)
     }
 
     fun render(dt: Float, t: Float) {
