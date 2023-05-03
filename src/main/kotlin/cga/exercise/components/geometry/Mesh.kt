@@ -43,6 +43,10 @@ class Mesh(vertexdata: FloatArray, indexdata: IntArray, attributes: Array<Vertex
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,iboId)
         GL15.glBufferData(GL_ELEMENT_ARRAY_BUFFER,indices, GL_STATIC_DRAW)
 
+        // Unbind VBO and VAO
+        glBindBuffer(GL_ARRAY_BUFFER, 0)
+        glBindVertexArray(0)
+
     }
 
     /**
@@ -51,7 +55,6 @@ class Mesh(vertexdata: FloatArray, indexdata: IntArray, attributes: Array<Vertex
     fun render() {
         // todo
         glBindVertexArray(vaoId)
-        //glDrawArrays(GL_TRIANGLES,0,indexcount)
         glDrawElements(GL_TRIANGLES,indexcount, GL_UNSIGNED_INT,0)
         glBindVertexArray(0)
     }
