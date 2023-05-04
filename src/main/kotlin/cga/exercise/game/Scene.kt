@@ -33,7 +33,43 @@ class Scene(private val window: GameWindow) {
             0, 1, 2,
             0, 2, 4,
             4, 2, 3
-        )*/
+        )
+
+        //Initialien DP
+         private val vertices = floatArrayOf(
+// Buchstabe D:
+        -0.75f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
+        -0.75f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
+        -0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
+        -0.25f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
+        -0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+        -0.25f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
+// Buchstabe P:
+        0.25f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
+        0.25f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
+        0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
+        0.75f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
+        0.75f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+        0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+        0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f
+
+    )
+
+    val indices = intArrayOf(
+        // Indizes für den Buchstaben D:
+        0,1,2,
+        0,4,5,
+        2,3,4,
+
+        //Indizes für P:
+        6,7,8,
+        8,6,12,
+        8,9,11,
+        8,9,10
+
+    )
+
+        */
         //1.2.4 Initialien
         val vertices = floatArrayOf(
                 //L
