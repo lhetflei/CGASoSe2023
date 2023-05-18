@@ -6,6 +6,8 @@ import cga.exercise.components.shader.ShaderProgram
 import cga.framework.GLError
 import cga.framework.GameWindow
 import cga.framework.OBJLoader.loadOBJ
+import org.joml.Matrix4f
+import org.joml.Vector3f
 import org.lwjgl.opengl.GL30.*
 
 
@@ -13,15 +15,19 @@ import org.lwjgl.opengl.GL30.*
  * Created 29.03.2023.
  */
 class Scene(private val window: GameWindow) {
-    private val staticShader: ShaderProgram = ShaderProgram("assets/shaders/simple_vert.glsl", "assets/shaders/simple_frag.glsl")
+    private val staticShader: ShaderProgram = ShaderProgram("assets/shaders/tron_vert.glsl", "assets/shaders/tron_frag.glsl")
 
-    private val simpleMesh: Mesh
+    //private val simpleMesh: Mesh
+    private val sphereMesh: Mesh
+    private val groundMesh: Mesh
 
+    private val shpereMatrix = Matrix4f()
+    private val groundMatrix = Matrix4f()
 
     //scene setup
     init {
         //1.2.3 haus
-        /*val vertices = floatArrayOf(
+        val vertices = floatArrayOf(
             -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
             0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
             0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
@@ -34,7 +40,7 @@ class Scene(private val window: GameWindow) {
             0, 2, 4,
             4, 2, 3
         )
-
+/*
         //Initialien DP
          private val vertices = floatArrayOf(
 // Buchstabe D:
@@ -118,6 +124,7 @@ class Scene(private val window: GameWindow) {
 
         */
         //1.2.4 Initialien
+        /*
         val vertices = floatArrayOf(
                 //L
                 -0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
@@ -159,38 +166,54 @@ class Scene(private val window: GameWindow) {
                 16,18,17,
                 17,18,19
         )
+*/
 
-        // todo
-        val res = loadOBJ("assets/models/sphere.obj", true, true)
+        val res = loadOBJ("assets/models/ground.obj", true, true)
 
         //Get the first mesh of the first object
-        val objMesh = res.objects[0].meshes[0]
 
+        val objMesh = res.objects[0].meshes[0]
+        val objres = loadOBJ("assets/models/sphere.obj", true, true)
+        val objsphereMesh = objres.objects[0].meshes[0]
         val stride = 8 * 4
+
+
+
+
+
         val vertexAttributes = arrayOf<VertexAttribute>(
                  VertexAttribute(3,GL_FLOAT, stride, 0)
-                ,VertexAttribute(3, GL_FLOAT, stride, (3 * 4).toLong())
+                ,VertexAttribute(2, GL_FLOAT, stride, (3 * 4).toLong())
                 ,VertexAttribute(3, GL_FLOAT, stride, (5 * 4).toLong()))
 
         //1.3 mesh
-        simpleMesh = Mesh(objMesh.vertexData, objMesh.indexData, vertexAttributes)
+        groundMesh = Mesh(objMesh.vertexData, objMesh.indexData, vertexAttributes)
+        sphereMesh = Mesh(objsphereMesh.vertexData, objsphereMesh.indexData, vertexAttributes)
+
+        shpereMatrix.scale(0.5f)
+        groundMatrix.rotation(90f,Vector3f(1f,0f,0f)).scale(0.7f)
 
 
         enableFaceCulling(GL_CW, GL_FRONT)
         enableDepthTest(GL_LESS)
 
-        glClearColor(0.0f, 0.533f, 1.0f, 1.0f); GLError.checkThrow() //blau
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f); GLError.checkThrow() //blau
         //glClearColor(0.0f, 0.0f, 0.0f, 1.0f); GLError.checkThrow() //schwarz
-        //val vertexAttribute =arrayOf<VertexAttribute>(VertexAttribute(3, GL_FLOAT,24,0),VertexAttribute(3, GL_FLOAT,24,12))
+        val vertexAttribute =arrayOf<VertexAttribute>(VertexAttribute(3, GL_FLOAT,24,0),VertexAttribute(3, GL_FLOAT,24,12))
         //1.2 mesh
-        //simpleMesh = Mesh(vertices, indices,vertexAttribute)
+       // simpleMesh = Mesh(vertices, indices,vertexAttribute)
+
+
     }
 
     fun render(dt: Float, t: Float) {
         glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
         staticShader.use()
-
-        simpleMesh.render()
+        staticShader.setUniform("model_matrix", shpereMatrix)
+        sphereMesh.render()
+        staticShader.setUniform("model_matrix", groundMatrix)
+        groundMesh.render()
+        //simpleMesh.render()
 
     }
 
@@ -201,7 +224,9 @@ class Scene(private val window: GameWindow) {
     fun onMouseMove(xpos: Double, ypos: Double) {}
 
     fun cleanup() {
-        simpleMesh.cleanup()
+        //simpleMesh.cleanup()
+        sphereMesh.cleanup()
+        groundMesh.cleanup()
     }
 
     /**

@@ -44,9 +44,9 @@ class Mesh(vertexdata: FloatArray, indexdata: IntArray, attributes: Array<Vertex
         GL15.glBufferData(GL_ELEMENT_ARRAY_BUFFER,indices, GL_STATIC_DRAW)
 
         // Unbind VBO and VAO
-        glBindBuffer(GL_ARRAY_BUFFER, 0)
         glBindVertexArray(0)
-
+        glBindBuffer(GL_ARRAY_BUFFER, 0)
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0)
     }
 
     /**
