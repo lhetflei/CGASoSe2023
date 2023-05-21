@@ -21,7 +21,7 @@ class Scene(private val window: GameWindow) {
     private val sphereMesh: Mesh
     private val groundMesh: Mesh
 
-    private val shpereMatrix = Matrix4f()
+    private val sphereMatrix = Matrix4f()
     private val groundMatrix = Matrix4f()
 
     //scene setup
@@ -190,11 +190,11 @@ class Scene(private val window: GameWindow) {
         groundMesh = Mesh(objMesh.vertexData, objMesh.indexData, vertexAttributes)
         sphereMesh = Mesh(objsphereMesh.vertexData, objsphereMesh.indexData, vertexAttributes)
 
-        shpereMatrix.scale(0.5f)
+        sphereMatrix.scale(0.5f)
         groundMatrix.rotation(90f,Vector3f(1f,0f,0f)).scale(0.7f)
 
 
-        enableFaceCulling(GL_CW, GL_FRONT)
+        //enableFaceCulling(GL_CW, GL_FRONT)
         enableDepthTest(GL_LESS)
 
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f); GLError.checkThrow() //blau
@@ -209,7 +209,7 @@ class Scene(private val window: GameWindow) {
     fun render(dt: Float, t: Float) {
         glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
         staticShader.use()
-        staticShader.setUniform("model_matrix", shpereMatrix)
+        staticShader.setUniform("model_matrix", sphereMatrix)
         sphereMesh.render()
         staticShader.setUniform("model_matrix", groundMatrix)
         groundMesh.render()
