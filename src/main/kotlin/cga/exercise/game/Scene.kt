@@ -1,11 +1,14 @@
 package cga.exercise.game
 
 import cga.exercise.components.geometry.Mesh
+import cga.exercise.components.geometry.Renderable
+import cga.exercise.components.geometry.Transformable
 import cga.exercise.components.geometry.VertexAttribute
 import cga.exercise.components.shader.ShaderProgram
 import cga.framework.GLError
 import cga.framework.GameWindow
 import cga.framework.OBJLoader.loadOBJ
+import org.joml.Math
 import org.joml.Matrix4f
 import org.joml.Vector3f
 import org.lwjgl.opengl.GL30.*
@@ -23,6 +26,9 @@ class Scene(private val window: GameWindow) {
 
     private val sphereMatrix = Matrix4f()
     private val groundMatrix = Matrix4f()
+
+    var meshlist = mutableListOf<Mesh>()
+    var renderable = Renderable(meshlist)
 
     //scene setup
     init {
@@ -194,6 +200,7 @@ class Scene(private val window: GameWindow) {
         groundMatrix.rotation(90f,Vector3f(1f,0f,0f)).scale(0.7f)
 
 
+
         //enableFaceCulling(GL_CW, GL_FRONT)
         enableDepthTest(GL_LESS)
 
@@ -202,17 +209,26 @@ class Scene(private val window: GameWindow) {
         val vertexAttribute =arrayOf<VertexAttribute>(VertexAttribute(3, GL_FLOAT,24,0),VertexAttribute(3, GL_FLOAT,24,12))
         //1.2 mesh
        // simpleMesh = Mesh(vertices, indices,vertexAttribute)
+        meshlist = mutableListOf<Mesh>(groundMesh,sphereMesh)
+        renderable = Renderable(meshlist)
+        renderable.scale(Vector3f(2f, 3f, 4f))
+
+        val transformable = Transformable()
+        transformable.scale(Vector3f(2f, 3f, 4f))
 
 
     }
 
     fun render(dt: Float, t: Float) {
         glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
+
+
         staticShader.use()
-        staticShader.setUniform("model_matrix", sphereMatrix)
-        sphereMesh.render()
-        staticShader.setUniform("model_matrix", groundMatrix)
-        groundMesh.render()
+        //staticShader.setUniform("model_matrix", sphereMatrix)
+        //sphereMesh.render()
+        //staticShader.setUniform("model_matrix", groundMatrix)
+        //groundMesh.render()
+        renderable.render(staticShader)
         //simpleMesh.render()
 
     }
