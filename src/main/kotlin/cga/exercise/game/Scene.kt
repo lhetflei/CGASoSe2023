@@ -213,8 +213,8 @@ class Scene(private val window: GameWindow) {
 
         renderable = Renderable(mutableListOf<Mesh>(sphereMesh))
         renderable2 = Renderable(mutableListOf<Mesh>(groundMesh))
-        renderable.scale(Vector3f(0.1f, 0.1f, 0.1f))
-        renderable2.rotate(180f,90f,90f)
+        renderable.scale(Vector3f(0.5f, 0.5f, 0.5f))
+        renderable2.rotate(180f,0f,0f)
         renderable2.scale(Vector3f(0.7f, 0.7f, 0.7f))
 
 
@@ -229,8 +229,9 @@ class Scene(private val window: GameWindow) {
         //sphereMesh.render()
         //staticShader.setUniform("model_matrix", renderable2.getModelMatrix())
         //groundMesh.render()
-        renderable.render(staticShader)
+
         renderable2.render(staticShader)
+        renderable.render(staticShader)
         //simpleMesh.render()
 
     }

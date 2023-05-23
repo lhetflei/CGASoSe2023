@@ -59,9 +59,17 @@ open class Transformable(private var modelMatrix: Matrix4f = Matrix4f(), var par
         val rotation = Matrix4f().rotateXYZ(pitch, yaw, roll)
         val translationBack = Matrix4f().translate(altMidpoint.x, altMidpoint.y, altMidpoint.z)
 
-        modelMatrix.mul(translationBack)
-        modelMatrix.mul(rotation)
-        modelMatrix.mul(translationToOrigin)
+
+        val tempMatrix = Matrix4f()
+
+
+        tempMatrix.identity()
+        tempMatrix.mul(translationBack)
+        tempMatrix.mul(rotation)
+        tempMatrix.mul(translationToOrigin)
+
+
+        modelMatrix = tempMatrix.mul(modelMatrix)
         //throw NotImplementedError()
     }
 
