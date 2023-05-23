@@ -29,6 +29,7 @@ class Scene(private val window: GameWindow) {
 
     var meshlist = mutableListOf<Mesh>()
     var renderable = Renderable(meshlist)
+    var renderable2 = Renderable(meshlist)
 
     //scene setup
     init {
@@ -209,12 +210,12 @@ class Scene(private val window: GameWindow) {
         val vertexAttribute =arrayOf<VertexAttribute>(VertexAttribute(3, GL_FLOAT,24,0),VertexAttribute(3, GL_FLOAT,24,12))
         //1.2 mesh
        // simpleMesh = Mesh(vertices, indices,vertexAttribute)
-        meshlist = mutableListOf<Mesh>(groundMesh,sphereMesh)
-        renderable = Renderable(meshlist)
-        renderable.scale(Vector3f(2f, 3f, 4f))
 
-        val transformable = Transformable()
-        transformable.scale(Vector3f(2f, 3f, 4f))
+        renderable = Renderable(mutableListOf<Mesh>(sphereMesh))
+        renderable2 = Renderable(mutableListOf<Mesh>(groundMesh))
+        renderable.scale(Vector3f(0.1f, 0.1f, 0.1f))
+        renderable2.rotate(180f,90f,90f)
+        renderable2.scale(Vector3f(0.7f, 0.7f, 0.7f))
 
 
     }
@@ -223,12 +224,13 @@ class Scene(private val window: GameWindow) {
         glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
 
 
-        staticShader.use()
+        //staticShader.use()
         //staticShader.setUniform("model_matrix", sphereMatrix)
         //sphereMesh.render()
-        //staticShader.setUniform("model_matrix", groundMatrix)
+        //staticShader.setUniform("model_matrix", renderable2.getModelMatrix())
         //groundMesh.render()
         renderable.render(staticShader)
+        renderable2.render(staticShader)
         //simpleMesh.render()
 
     }
@@ -241,8 +243,8 @@ class Scene(private val window: GameWindow) {
 
     fun cleanup() {
         //simpleMesh.cleanup()
-        sphereMesh.cleanup()
-        groundMesh.cleanup()
+
+
     }
 
     /**
