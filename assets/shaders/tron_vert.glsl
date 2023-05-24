@@ -10,10 +10,12 @@ uniform mat4 model_matrix = mat4(1.0, 0.0, 0.0, 0.0,
                                  0.0, 1.0, 0.0, 0.0,
                                  0.0, 0.0, 1.0, 0.0,
                                  0.0, 0.0, 0.0, 1.0);
+
+
 // world to camera (2.4.2)
-// uniform mat4 view_matrix;
+ uniform mat4 view_matrix;
 // camera to clipping (2.4.2)
-// uniform mat4 proj_matrix;
+ uniform mat4 proj_matrix;
 
 // Hint: Packing your data passed to the fragment shader into a struct like this helps to keep the code readable!
 out struct VertexData
@@ -33,6 +35,6 @@ void main(){
     gl_Position = worldSpacePos * vec4(1.0, 1.0, -1.0, 1.0);
     // Green color with some variation due to z coordinate
     vertexData.color = vec3(0.0, worldSpacePos.z + 0.5, 0.0);
-    gl_Position = model_matrix * vec4(position, 1.0);
+    gl_Position =  view_matrix * model_matrix * vec4(position, 1.0);    //gl_Position = proj_matrix * view_matrix * model_matrix * vec4(position, 1.0);
         vertexData.color = mat3(transpose(inverse(model_matrix))) * normal;
 }

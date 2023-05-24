@@ -62,6 +62,8 @@ class ShaderProgram(vertexShaderPath: String, fragmentShaderPath: String) {
         return false
     }
 
+
+
     /**
      * Creates a shader object from vertex and fragment shader paths
      * @param vertexShaderPath      vertex shader path

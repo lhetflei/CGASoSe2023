@@ -1,4 +1,58 @@
 package cga.exercise.components.camera
+
+import cga.exercise.components.shader.ShaderProgram
+import cga.exercise.components.geometry.Transformable
+import org.joml.Matrix4f
+import org.joml.Vector3f
+
+class TronCamera : Transformable(), ICamera {
+    private val fov: Float = Math.toRadians(190.0).toFloat() // Field of View
+    private val aspectRatio: Float = 16.0f / 9.0f // Seitenverhältnis (horizontaler Öffnungswinkel)
+    private val nearPlane: Float = 0.1f // Near Plane
+    private val farPlane: Float = 100.0f // Far Plane
+
+    private val viewMatrix: Matrix4f = Matrix4f() // View-Matrix
+    private val projectionMatrix: Matrix4f = Matrix4f() // Projection-Matrix
+
+    init {
+        calculateProjectionMatrix()
+    }
+
+    override fun getCalculateViewMatrix(): Matrix4f {
+        return viewMatrix
+    }
+
+    override fun getCalculateProjectionMatrix(): Matrix4f {
+        return projectionMatrix
+    }
+
+    private fun calculateViewMatrix() {
+        viewMatrix.lookAt(
+                getPosition(), // Kameraposition
+                getPosition().add(getWorldZAxis().negate()), // Blickrichtung
+                getYAxis() // Oben-Vektor
+        )
+    }
+
+    private fun calculateProjectionMatrix() {
+        projectionMatrix.perspective(fov, aspectRatio, nearPlane, farPlane)
+    }
+
+    fun updateViewMatrix() {
+        calculateViewMatrix()
+    }
+
+    fun updateProjectionMatrix() {
+        calculateProjectionMatrix()
+    }
+    override fun bind(shader: ShaderProgram) {
+        shader.setUniform("view_matrix", viewMatrix)
+        shader.setUniform("proj_matrix", projectionMatrix)
+    }
+
+}
+
+/*package cga.exercise.components.camera
 import cga.exercise.components.geometry.Transformable
 import cga.exercise.components.shader.ShaderProgram
 
@@ -35,7 +89,7 @@ class TronCamera : Transformable(), ICamera {
     }
 
     override fun bind(shader: ShaderProgram) {
-        shader.setUniform("projectionMatrix", getCalculateProjectionMatrix())
-        shader.setUniform("viewMatrix", getCalculateViewMatrix())
+        shader.setUniform("proj_matrix", getCalculateProjectionMatrix())
+        shader.setUniform("view_matrix", getCalculateViewMatrix())
     }
-}
+}*/

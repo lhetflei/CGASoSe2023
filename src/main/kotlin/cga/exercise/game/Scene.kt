@@ -24,12 +24,12 @@ class Scene(private val window: GameWindow) {
     private val sphereMesh: Mesh
     private val groundMesh: Mesh
 
-    //private val sphereMatrix = Matrix4f()
-    //private val groundMatrix = Matrix4f()
+    private val sphereMatrix = Matrix4f()
+    private val groundMatrix = Matrix4f()
 
-    //var meshlist = mutableListOf<Mesh>()
-    //var renderable = Renderable(meshlist)
-    //var renderable2 = Renderable(meshlist)
+    var meshlist = mutableListOf<Mesh>()
+    var renderable = Renderable(meshlist)
+    var renderable2 = Renderable(meshlist)
 
     //scene setup
     init {
@@ -49,6 +49,7 @@ class Scene(private val window: GameWindow) {
         )
 
         camera = TronCamera()
+        camera.rotate(-20f,0f,0f)
         camera.translate(Vector3f(0.0f, 0.0f, 4.0f))
 
 /*
@@ -213,28 +214,32 @@ class Scene(private val window: GameWindow) {
         //1.2 mesh
        // simpleMesh = Mesh(vertices, indices,vertexAttribute)
 
-        //renderable = Renderable(mutableListOf<Mesh>(sphereMesh))
-        //renderable2 = Renderable(mutableListOf<Mesh>(groundMesh))
-        //renderable.scale(Vector3f(0.5f, 0.5f, 0.5f))
-        //renderable2.rotate(180f,0f,0f)
-        //renderable2.scale(Vector3f(0.7f, 0.7f, 0.7f))
+        renderable = Renderable(mutableListOf<Mesh>(sphereMesh))
+        renderable2 = Renderable(mutableListOf<Mesh>(groundMesh))
+        /*renderable.scale(Vector3f(0.5f, 0.5f, 0.5f))
+        renderable2.rotate(180f,0f,0f)
+        renderable2.scale(Vector3f(0.7f, 0.7f, 0.7f))*/
     }
 
     fun render(dt: Float, t: Float) {
         glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
 
-
+/*
         staticShader.use()
 
         val viewMatrix = camera.getCalculateViewMatrix()
-        staticShader.setUniform("viewMatrix", viewMatrix)
+        staticShader.setUniform("view_matrix", viewMatrix)
 
         val projectionMatrix = camera.getCalculateProjectionMatrix()
-        staticShader.setUniform("projectionMatrix", projectionMatrix)
+        staticShader.setUniform("proj_matrix", projectionMatrix)
 
         // Normalenmatrix berechnen
         val normalMatrix = Matrix4f(viewMatrix).invert().transpose()
         staticShader.setUniform("normalMatrix", normalMatrix)
+*/
+        camera.updateViewMatrix()
+        camera.updateProjectionMatrix()
+        camera.bind(staticShader)
 
         sphereMesh.render()
         groundMesh.render()
@@ -246,8 +251,8 @@ class Scene(private val window: GameWindow) {
         //staticShader.setUniform("model_matrix", renderable2.getModelMatrix())
         //groundMesh.render()
 
-        //renderable2.render(staticShader)
-        //renderable.render(staticShader)
+        renderable2.render(staticShader)
+        renderable.render(staticShader)
         //simpleMesh.render()
 
     }
