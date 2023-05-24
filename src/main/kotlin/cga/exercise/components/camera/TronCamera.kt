@@ -13,6 +13,8 @@ class TronCamera : Transformable(), ICamera {
     private var nearPlane: Float = 0.1f
     private var farPlane: Float = 100.0f
 
+
+
     override fun getCalculateViewMatrix(): Matrix4f {
         val viewMatrix = Matrix4f()
         viewMatrix.lookAt(getPosition(), getPosition().add(getFront(), Vector3f()), getUp())

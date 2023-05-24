@@ -26,4 +26,5 @@ interface ICamera {
 
     fun bind(shader: ShaderProgram)
 
+
 }
