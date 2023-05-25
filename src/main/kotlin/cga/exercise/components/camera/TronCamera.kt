@@ -6,16 +6,16 @@ import org.joml.Matrix4f
 import org.joml.Vector3f
 
 class TronCamera : Transformable(), ICamera {
-    private val fov: Float = Math.toRadians(190.0).toFloat() // Field of View
+    private val fov: Float = Math.toRadians(90.0).toFloat() // Field of View
     private val aspectRatio: Float = 16.0f / 9.0f // Seitenverhältnis (horizontaler Öffnungswinkel)
-    private val nearPlane: Float = 0.1f // Near Plane
+    private val nearPlane: Float = 0.01f // Near Plane
     private val farPlane: Float = 100.0f // Far Plane
 
-    private val viewMatrix: Matrix4f = Matrix4f() // View-Matrix
-    private val projectionMatrix: Matrix4f = Matrix4f() // Projection-Matrix
+    private var viewMatrix: Matrix4f = Matrix4f() // View-Matrix
+    private var projectionMatrix: Matrix4f = Matrix4f() // Projection-Matrix
 
     init {
-        calculateProjectionMatrix()
+
     }
 
     override fun getCalculateViewMatrix(): Matrix4f {
@@ -27,15 +27,17 @@ class TronCamera : Transformable(), ICamera {
     }
 
     private fun calculateViewMatrix() {
-        viewMatrix.lookAt(
-                getPosition(), // Kameraposition
-                getPosition().add(getWorldZAxis().negate()), // Blickrichtung
-                getYAxis() // Oben-Vektor
-        )
+        viewMatrix = Matrix4f().lookAt(getWorldPosition(), getWorldPosition().add(getWorldZAxis().negate()), getWorldYAxis())
+
+        /*viewMatrix.lookAt(
+                getWorldPosition(), // Kameraposition
+                getPosition().add(getZAxis().negate()), // Blickrichtung
+                getWorldYAxis() // Oben-Vektor
+        )*/
     }
 
     private fun calculateProjectionMatrix() {
-        projectionMatrix.perspective(fov, aspectRatio, nearPlane, farPlane)
+        projectionMatrix = Matrix4f().perspective(fov, aspectRatio, nearPlane, farPlane)
     }
 
     fun updateViewMatrix() {

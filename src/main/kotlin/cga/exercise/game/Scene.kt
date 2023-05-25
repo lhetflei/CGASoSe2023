@@ -10,6 +10,7 @@ import cga.framework.GameWindow
 import cga.framework.OBJLoader.loadOBJ
 import org.joml.Matrix4f
 import org.joml.Vector3f
+import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.opengl.GL30.*
 
 
@@ -49,8 +50,8 @@ class Scene(private val window: GameWindow) {
         )
 
         camera = TronCamera()
-        camera.rotate(-20f,0f,0f)
-        camera.translate(Vector3f(0.0f, 0.0f, 4.0f))
+        camera.rotate(3f,0f,0f)
+        camera.translate(Vector3f(0.0f, 0.0f, 1.0f))
 
 /*
         //Initialien DP
@@ -216,9 +217,9 @@ class Scene(private val window: GameWindow) {
 
         renderable = Renderable(mutableListOf<Mesh>(sphereMesh))
         renderable2 = Renderable(mutableListOf<Mesh>(groundMesh))
-        /*renderable.scale(Vector3f(0.5f, 0.5f, 0.5f))
-        renderable2.rotate(180f,0f,0f)
-        renderable2.scale(Vector3f(0.7f, 0.7f, 0.7f))*/
+        //renderable.scale(Vector3f(0.5f, 0.5f, 0.5f))
+        //renderable2.rotate(180f,0f,0f)
+        //renderable2.scale(Vector3f(100.7f, 100.7f, 100.7f))
     }
 
     fun render(dt: Float, t: Float) {
@@ -241,8 +242,8 @@ class Scene(private val window: GameWindow) {
         camera.updateProjectionMatrix()
         camera.bind(staticShader)
 
-        sphereMesh.render()
-        groundMesh.render()
+        //sphereMesh.render()
+        //groundMesh.render()
 
 
         //staticShader.use()
@@ -250,15 +251,31 @@ class Scene(private val window: GameWindow) {
         //sphereMesh.render()
         //staticShader.setUniform("model_matrix", renderable2.getModelMatrix())
         //groundMesh.render()
-
-        renderable2.render(staticShader)
         renderable.render(staticShader)
+        renderable2.render(staticShader)
+
         //simpleMesh.render()
 
     }
 
-    fun update(dt: Float, t: Float) {}
-
+    fun update(dt: Float, t: Float) {
+    if (window.getKeyState(GLFW_KEY_W) == true) {
+        renderable.scale(Vector3f(1.02f, 1.02f, 1.02f))
+        //camera.translate(Vector3f(0.0f,0.0f,-2.0f))
+    }
+    if (window.getKeyState(GLFW_KEY_A) == true) {
+        renderable.rotate(0f,0f,-0.05f)
+        //camera.translate(Vector3f(-2.0f,0.0f,0.0f))
+    }
+    if (window.getKeyState(GLFW_KEY_S) == true) {
+        renderable.scale(Vector3f(0.98f, 0.98f, 0.98f))
+        //camera.translate(Vector3f(0.0f,0.0f,2.0f))
+    }
+    if (window.getKeyState(GLFW_KEY_D) == true) {
+        renderable.rotate(0f,0f,0.05f)
+        //camera.translate(Vector3f(2.0f,0.0f,0.0f))
+    }
+    }
     fun onKey(key: Int, scancode: Int, action: Int, mode: Int) {}
 
     fun onMouseMove(xpos: Double, ypos: Double) {}
