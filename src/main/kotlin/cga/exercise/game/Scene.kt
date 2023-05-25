@@ -50,8 +50,8 @@ class Scene(private val window: GameWindow) {
         )
 
         camera = TronCamera()
-        camera.rotate(3f,0f,0f)
-        camera.translate(Vector3f(0.0f, 0.0f, 1.0f))
+        camera.rotate(2.7f,0f,0f)
+        camera.translate(Vector3f(0.0f, 0.0f, 4.0f))
 
 /*
         //Initialien DP
@@ -220,6 +220,7 @@ class Scene(private val window: GameWindow) {
         //renderable.scale(Vector3f(0.5f, 0.5f, 0.5f))
         //renderable2.rotate(180f,0f,0f)
         //renderable2.scale(Vector3f(100.7f, 100.7f, 100.7f))
+        camera.parent = renderable
     }
 
     fun render(dt: Float, t: Float) {
@@ -264,7 +265,7 @@ class Scene(private val window: GameWindow) {
         //camera.translate(Vector3f(0.0f,0.0f,-2.0f))
     }
     if (window.getKeyState(GLFW_KEY_A) == true) {
-        renderable.rotate(0f,0f,-0.05f)
+        renderable.rotate(0f,-0.05f,0.00f)
         //camera.translate(Vector3f(-2.0f,0.0f,0.0f))
     }
     if (window.getKeyState(GLFW_KEY_S) == true) {
@@ -272,7 +273,7 @@ class Scene(private val window: GameWindow) {
         //camera.translate(Vector3f(0.0f,0.0f,2.0f))
     }
     if (window.getKeyState(GLFW_KEY_D) == true) {
-        renderable.rotate(0f,0f,0.05f)
+        renderable.rotate(0f,0.05f,0.0f)
         //camera.translate(Vector3f(2.0f,0.0f,0.0f))
     }
     }

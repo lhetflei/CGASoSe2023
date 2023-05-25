@@ -29,11 +29,6 @@ class TronCamera : Transformable(), ICamera {
     private fun calculateViewMatrix() {
         viewMatrix = Matrix4f().lookAt(getWorldPosition(), getWorldPosition().add(getWorldZAxis().negate()), getWorldYAxis())
 
-        /*viewMatrix.lookAt(
-                getWorldPosition(), // Kameraposition
-                getPosition().add(getZAxis().negate()), // Blickrichtung
-                getWorldYAxis() // Oben-Vektor
-        )*/
     }
 
     private fun calculateProjectionMatrix() {
