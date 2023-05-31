@@ -22,8 +22,8 @@ class Scene(private val window: GameWindow) {
 
     private var camera: TronCamera
     //private val simpleMesh: Mesh
-    private val sphereMesh: Mesh
-    private val groundMesh: Mesh
+    //private val sphereMesh: Mesh
+    //private val groundMesh: Mesh
 
     private val sphereMatrix = Matrix4f()
     private val groundMatrix = Matrix4f()
@@ -50,8 +50,9 @@ class Scene(private val window: GameWindow) {
         )
 
         camera = TronCamera()
-        camera.rotate(2.7f,0f,0f)
+        camera.rotate(-0.35f,0f,0f)
         camera.translate(Vector3f(0.0f, 0.0f, 4.0f))
+
 
 /*
         //Initialien DP
@@ -185,8 +186,6 @@ class Scene(private val window: GameWindow) {
 
         //Get the first mesh of the first object
 
-
-
         val objMesh = res.objects[0].meshes[0]
         val objres = loadOBJ("assets/models/sphere.obj", true, true)
         val objsphereMesh = objres.objects[0].meshes[0]
@@ -198,8 +197,8 @@ class Scene(private val window: GameWindow) {
                 ,VertexAttribute(3, GL_FLOAT, stride, (5 * 4).toLong()))
 
         //1.3 mesh
-        groundMesh = Mesh(objMesh.vertexData, objMesh.indexData, vertexAttributes)
-        sphereMesh = Mesh(objsphereMesh.vertexData, objsphereMesh.indexData, vertexAttributes)
+        //groundMesh = Mesh(objMesh.vertexData, objMesh.indexData, vertexAttributes, materials[model.meshes[i].materialIndex])
+        //sphereMesh = Mesh(objsphereMesh.vertexData, objsphereMesh.indexData, vertexAttributes, materials[model.meshes[i].materialIndex])
 
         //sphereMatrix.scale(0.5f)
         //groundMatrix.rotation(90f,Vector3f(1f,0f,0f)).scale(0.7f)
@@ -215,17 +214,18 @@ class Scene(private val window: GameWindow) {
         //1.2 mesh
        // simpleMesh = Mesh(vertices, indices,vertexAttribute)
 
-        renderable = Renderable(mutableListOf<Mesh>(sphereMesh))
-        renderable2 = Renderable(mutableListOf<Mesh>(groundMesh))
-        //renderable.scale(Vector3f(0.5f, 0.5f, 0.5f))
-        //renderable2.rotate(180f,0f,0f)
-        //renderable2.scale(Vector3f(100.7f, 100.7f, 100.7f))
+        //renderable = Renderable(mutableListOf<Mesh>(sphereMesh))
+        //renderable2 = Renderable(mutableListOf<Mesh>(groundMesh))
+        /*
+        renderable.scale(Vector3f(0.5f, 0.5f, 0.5f))
+        renderable2.rotate(180f,0f,0f)
+        renderable2.scale(Vector3f(0.7f, 0.7f, 0.7f))*/
         camera.parent = renderable
     }
 
     fun render(dt: Float, t: Float) {
         glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
-
+        staticShader.use()
 /*
         staticShader.use()
 
@@ -243,6 +243,11 @@ class Scene(private val window: GameWindow) {
         camera.updateProjectionMatrix()
         camera.bind(staticShader)
 
+
+        renderable2.render(staticShader)
+        renderable.render(staticShader)
+
+
         //sphereMesh.render()
         //groundMesh.render()
 
@@ -252,8 +257,7 @@ class Scene(private val window: GameWindow) {
         //sphereMesh.render()
         //staticShader.setUniform("model_matrix", renderable2.getModelMatrix())
         //groundMesh.render()
-        renderable.render(staticShader)
-        renderable2.render(staticShader)
+
 
         //simpleMesh.render()
 

@@ -14,7 +14,7 @@ import org.lwjgl.opengl.GL30.*
  *
  * Created 29.03.2023.
  */
-class Mesh(vertexdata: FloatArray, indexdata: IntArray, attributes: Array<VertexAttribute>) {
+class Mesh(vertexdata: FloatArray, indexdata: IntArray, attributes: Array<VertexAttribute>, material: Material) {
     //private data
     private var vaoId = 0
     private var vboId = 0

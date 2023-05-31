@@ -9,7 +9,7 @@ class Renderable(private val meshes: MutableList<Mesh>) : Transformable() , IRen
     override fun render(shaderProgram: ShaderProgram) {
 
         shaderProgram.use()
-        shaderProgram.setUniform("model_matrix", getWorldModelMatrix())
+        shaderProgram.setUniform("model_matrix", getModelMatrix())
 
         for (mesh in meshes) {
 

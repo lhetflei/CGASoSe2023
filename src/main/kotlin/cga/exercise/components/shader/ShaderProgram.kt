@@ -4,6 +4,8 @@ import org.joml.*
 import org.lwjgl.BufferUtils
 import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL20
+import org.lwjgl.opengl.GL20.glGetUniformLocation
+import org.lwjgl.opengl.GL20.glUniform1i
 import org.lwjgl.opengl.GL30
 import java.nio.FloatBuffer
 import java.nio.file.Files
@@ -61,7 +63,14 @@ class ShaderProgram(vertexShaderPath: String, fragmentShaderPath: String) {
         }
         return false
     }
-
+    fun setUniform(name: String, value: Int) {
+        val location = glGetUniformLocation(programID, name)
+        if (location != -1) {
+            glUniform1i(location, value)
+        } else {
+            println("Uniform variable $name not found in shader.")
+        }
+    }
 
 
     /**
