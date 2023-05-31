@@ -19,6 +19,7 @@ import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL13
 import org.lwjgl.opengl.GL14
 import org.lwjgl.opengl.GL30.*
+import java.nio.ByteBuffer
 
 
 /**
@@ -229,8 +230,14 @@ class Scene(private val window: GameWindow) {
         renderable.scale(Vector3f(0.7f, 0.7f, 0.7f))
         camera.parent = renderable
 
+        val imageData: ByteBuffer
+
         val spec = Texture2D("assets/textures/ground_spec.png", true)
         val ground = Texture2D("assets/textures/ground_emit.png", true)
+        ground.setTexParams(GL11.GL_REPEAT, GL11.GL_REPEAT, GL11.GL_LINEAR, GL11.GL_LINEAR)
+        GL11.glTexParameterf(GL11.GL_TEXTURE_2D,
+                EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT,
+                16.0f)
 
         val floorMaterial = Material(
 
@@ -240,19 +247,12 @@ class Scene(private val window: GameWindow) {
                 60.0f,
                 Vector2f(64.0f, 64.0f)
         )
+        floorMaterial.bind(staticShader)
+
+
         groundMesh = Mesh(objMesh.vertexData, objMesh.indexData, vertexAttributes, floorMaterial)
 
-        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL13.GL_CLAMP_TO_EDGE)
-        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL13.GL_CLAMP_TO_EDGE)
 
-// Set texture filtering parameters
-        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR)
-        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR)
-        GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL14.GL_TEXTURE_LOD_BIAS, -1.0f)
-        GL11.glTexParameterf(GL11.GL_TEXTURE_2D,
-                EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT,
-                16.0f)
-       ground.setTexParams(1,1,1,1)
 
         renderable = Renderable(mutableListOf<Mesh>(groundMesh))
     }
