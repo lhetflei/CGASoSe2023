@@ -1,16 +1,23 @@
 package cga.exercise.game
 
 import cga.exercise.components.camera.TronCamera
+import cga.exercise.components.geometry.Material
 import cga.exercise.components.geometry.Mesh
 import cga.exercise.components.geometry.Renderable
 import cga.exercise.components.geometry.VertexAttribute
 import cga.exercise.components.shader.ShaderProgram
+import cga.exercise.components.texture.Texture2D
 import cga.framework.GLError
 import cga.framework.GameWindow
 import cga.framework.OBJLoader.loadOBJ
 import org.joml.Matrix4f
+import org.joml.Vector2f
 import org.joml.Vector3f
 import org.lwjgl.glfw.GLFW.*
+import org.lwjgl.opengl.EXTTextureFilterAnisotropic
+import org.lwjgl.opengl.GL11
+import org.lwjgl.opengl.GL13
+import org.lwjgl.opengl.GL14
 import org.lwjgl.opengl.GL30.*
 
 
@@ -23,7 +30,7 @@ class Scene(private val window: GameWindow) {
     private var camera: TronCamera
     //private val simpleMesh: Mesh
     //private val sphereMesh: Mesh
-    //private val groundMesh: Mesh
+    private val groundMesh: Mesh
 
     private val sphereMatrix = Matrix4f()
     private val groundMatrix = Matrix4f()
@@ -197,7 +204,7 @@ class Scene(private val window: GameWindow) {
                 ,VertexAttribute(3, GL_FLOAT, stride, (5 * 4).toLong()))
 
         //1.3 mesh
-        //groundMesh = Mesh(objMesh.vertexData, objMesh.indexData, vertexAttributes, materials[model.meshes[i].materialIndex])
+
         //sphereMesh = Mesh(objsphereMesh.vertexData, objsphereMesh.indexData, vertexAttributes, materials[model.meshes[i].materialIndex])
 
         //sphereMatrix.scale(0.5f)
@@ -214,13 +221,40 @@ class Scene(private val window: GameWindow) {
         //1.2 mesh
        // simpleMesh = Mesh(vertices, indices,vertexAttribute)
 
-        //renderable = Renderable(mutableListOf<Mesh>(sphereMesh))
+
         //renderable2 = Renderable(mutableListOf<Mesh>(groundMesh))
         /*
         renderable.scale(Vector3f(0.5f, 0.5f, 0.5f))
-        renderable2.rotate(180f,0f,0f)
-        renderable2.scale(Vector3f(0.7f, 0.7f, 0.7f))*/
+        renderable.rotate(180f,0f,0f)*/
+        renderable.scale(Vector3f(0.7f, 0.7f, 0.7f))
         camera.parent = renderable
+
+        val spec = Texture2D("assets/textures/ground_spec.png", true)
+        val ground = Texture2D("assets/textures/ground_emit.png", true)
+
+        val floorMaterial = Material(
+
+                Texture2D("assets/textures/ground_diff.png", true),
+                ground,
+                spec,
+                60.0f,
+                Vector2f(64.0f, 64.0f)
+        )
+        groundMesh = Mesh(objMesh.vertexData, objMesh.indexData, vertexAttributes, floorMaterial)
+
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL13.GL_CLAMP_TO_EDGE)
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL13.GL_CLAMP_TO_EDGE)
+
+// Set texture filtering parameters
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR)
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR)
+        GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL14.GL_TEXTURE_LOD_BIAS, -1.0f)
+        GL11.glTexParameterf(GL11.GL_TEXTURE_2D,
+                EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT,
+                16.0f)
+       ground.setTexParams(1,1,1,1)
+
+        renderable = Renderable(mutableListOf<Mesh>(groundMesh))
     }
 
     fun render(dt: Float, t: Float) {
@@ -244,12 +278,12 @@ class Scene(private val window: GameWindow) {
         camera.bind(staticShader)
 
 
-        renderable2.render(staticShader)
+        //renderable2.render(staticShader)
         renderable.render(staticShader)
 
 
         //sphereMesh.render()
-        //groundMesh.render()
+        //groundMesh.render(staticShader)
 
 
         //staticShader.use()

@@ -71,7 +71,10 @@ class ShaderProgram(vertexShaderPath: String, fragmentShaderPath: String) {
             println("Uniform variable $name not found in shader.")
         }
     }
-
+    fun setUniform(name: String, value: Vector2f) {
+        val location = GL20.glGetUniformLocation(programID, name)
+        GL20.glUniform2f(location, value.x, value.y)
+    }
 
     /**
      * Creates a shader object from vertex and fragment shader paths

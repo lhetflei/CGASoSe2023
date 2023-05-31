@@ -1,5 +1,6 @@
 package cga.exercise.components.geometry
 
+import cga.exercise.components.shader.ShaderProgram
 import org.lwjgl.opengl.GL15
 import org.lwjgl.opengl.GL20
 import org.lwjgl.opengl.GL30.*
@@ -14,12 +15,13 @@ import org.lwjgl.opengl.GL30.*
  *
  * Created 29.03.2023.
  */
-class Mesh(vertexdata: FloatArray, indexdata: IntArray, attributes: Array<VertexAttribute>, material: Material) {
+class Mesh(vertexdata: FloatArray, indexdata: IntArray, attributes: Array<VertexAttribute>, material: Material?=null) {
     //private data
     private var vaoId = 0
     private var vboId = 0
     private var iboId = 0
     private var indexcount = indexdata.size
+    private var meshMaterial: Material? = material
 
     init {
         val vertices = vertexdata
@@ -52,11 +54,15 @@ class Mesh(vertexdata: FloatArray, indexdata: IntArray, attributes: Array<Vertex
     /**
      * Renders the mesh
      */
-    fun render() {
+    fun render(shaderProgram: ShaderProgram) {
         // todo
+
         glBindVertexArray(vaoId)
+        shaderProgram.use()
+        meshMaterial?.bind(shaderProgram)
         glDrawElements(GL_TRIANGLES,indexcount, GL_UNSIGNED_INT,0)
         glBindVertexArray(0)
+
     }
 
     /**

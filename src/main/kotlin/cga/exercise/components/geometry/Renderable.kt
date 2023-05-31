@@ -13,7 +13,7 @@ class Renderable(private val meshes: MutableList<Mesh>) : Transformable() , IRen
 
         for (mesh in meshes) {
 
-            mesh.render()
+            mesh.render(shaderProgram)
         }
 
     }
