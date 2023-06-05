@@ -9,17 +9,21 @@ import cga.exercise.components.shader.ShaderProgram
 import cga.exercise.components.texture.Texture2D
 import cga.framework.GLError
 import cga.framework.GameWindow
+import cga.framework.ModelLoader
 import cga.framework.OBJLoader.loadOBJ
 import org.joml.Matrix4f
 import org.joml.Vector2f
 import org.joml.Vector3f
+import org.lwjgl.BufferUtils
 import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.opengl.EXTTextureFilterAnisotropic
 import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL13
 import org.lwjgl.opengl.GL14
 import org.lwjgl.opengl.GL30.*
+import org.lwjgl.stb.STBImage
 import java.nio.ByteBuffer
+import cga.framework.ModelLoader.loadModel
 
 
 /**
@@ -39,6 +43,7 @@ class Scene(private val window: GameWindow) {
     var meshlist = mutableListOf<Mesh>()
     var renderable = Renderable(meshlist)
     var renderable2 = Renderable(meshlist)
+    var motorrad = Renderable(meshlist)
 
     //scene setup
     init {
@@ -58,7 +63,7 @@ class Scene(private val window: GameWindow) {
         )
 
         camera = TronCamera()
-        camera.rotate(-0.35f,0f,0f)
+        camera.rotate(-0.610865f,0f,0f)
         camera.translate(Vector3f(0.0f, 0.0f, 4.0f))
 
 
@@ -227,17 +232,29 @@ class Scene(private val window: GameWindow) {
         /*
         renderable.scale(Vector3f(0.5f, 0.5f, 0.5f))
         renderable.rotate(180f,0f,0f)*/
-        renderable.scale(Vector3f(0.7f, 0.7f, 0.7f))
-        camera.parent = renderable
+        //renderable.scale(Vector3f(0.7f, 0.7f, 0.7f))
 
-        val imageData: ByteBuffer
+
+
+        val imageData: ByteBuffer = BufferUtils.createByteBuffer(512*512*4)
+
+
+
+
+
 
         val spec = Texture2D("assets/textures/ground_spec.png", true)
         val ground = Texture2D("assets/textures/ground_emit.png", true)
-        ground.setTexParams(GL11.GL_REPEAT, GL11.GL_REPEAT, GL11.GL_LINEAR, GL11.GL_LINEAR)
-        GL11.glTexParameterf(GL11.GL_TEXTURE_2D,
-                EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT,
-                16.0f)
+
+
+        ground.bind(1)
+        ground.setTexParams(1,1,1,1)
+
+        GL11.glTexParameterf(GL11.GL_TEXTURE_2D,EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT,16.0f)
+
+        ground.unbind()
+
+
 
         val floorMaterial = Material(
 
@@ -250,16 +267,24 @@ class Scene(private val window: GameWindow) {
         floorMaterial.bind(staticShader)
 
 
+
         groundMesh = Mesh(objMesh.vertexData, objMesh.indexData, vertexAttributes, floorMaterial)
+        motorrad= ModelLoader.loadModel("assets/Light Cycle/Light Cycle/HQ_Movie cycle.obj", -1.5708f, 1.5708f, 0f)!!
+
+        motorrad.scale(Vector3f(0.8f, 0.8f, 0.8f))
 
 
 
+        renderable2 = motorrad
         renderable = Renderable(mutableListOf<Mesh>(groundMesh))
+
+        camera.parent = motorrad
     }
 
     fun render(dt: Float, t: Float) {
         glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
         staticShader.use()
+
 /*
         staticShader.use()
 
@@ -273,13 +298,16 @@ class Scene(private val window: GameWindow) {
         val normalMatrix = Matrix4f(viewMatrix).invert().transpose()
         staticShader.setUniform("normalMatrix", normalMatrix)
 */
+
         camera.updateViewMatrix()
         camera.updateProjectionMatrix()
         camera.bind(staticShader)
 
 
-        //renderable2.render(staticShader)
+
         renderable.render(staticShader)
+        motorrad.render(staticShader)
+        //renderable2.render(staticShader)
 
 
         //sphereMesh.render()
@@ -299,19 +327,19 @@ class Scene(private val window: GameWindow) {
 
     fun update(dt: Float, t: Float) {
     if (window.getKeyState(GLFW_KEY_W) == true) {
-        renderable.scale(Vector3f(1.02f, 1.02f, 1.02f))
+        motorrad.scale(Vector3f(1.02f, 1.02f, 1.02f))
         //camera.translate(Vector3f(0.0f,0.0f,-2.0f))
     }
     if (window.getKeyState(GLFW_KEY_A) == true) {
-        renderable.rotate(0f,-0.05f,0.00f)
+        motorrad.rotate(0f,-0.05f,0.00f)
         //camera.translate(Vector3f(-2.0f,0.0f,0.0f))
     }
     if (window.getKeyState(GLFW_KEY_S) == true) {
-        renderable.scale(Vector3f(0.98f, 0.98f, 0.98f))
+        motorrad.scale(Vector3f(0.98f, 0.98f, 0.98f))
         //camera.translate(Vector3f(0.0f,0.0f,2.0f))
     }
     if (window.getKeyState(GLFW_KEY_D) == true) {
-        renderable.rotate(0f,0.05f,0.0f)
+        motorrad.rotate(0f,0.05f,0.0f)
         //camera.translate(Vector3f(2.0f,0.0f,0.0f))
     }
     }
