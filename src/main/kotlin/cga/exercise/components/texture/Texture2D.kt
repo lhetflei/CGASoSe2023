@@ -6,6 +6,8 @@ import org.lwjgl.opengl.EXTTextureFilterAnisotropic
 import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL11.GL_TEXTURE
 import org.lwjgl.opengl.GL13
+import org.lwjgl.opengl.GL20.glGetUniformLocation
+import org.lwjgl.opengl.GL20.glUniform1i
 import org.lwjgl.opengl.GL30
 import org.lwjgl.stb.STBImage
 import java.nio.ByteBuffer

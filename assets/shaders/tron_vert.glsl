@@ -3,6 +3,7 @@
 // todo 2.1.2
 layout(location = 0) in vec3 position;
 layout(location = 2) in vec3 normal;
+layout(location = 1) in vec2 textureCoordinate;
 
 // --- uniforms
 // object to world (the default value will be used unless you upload some other matrix using glUniformMatrix4fv)
@@ -23,7 +24,7 @@ out struct VertexData
 
 {
     vec3 color;
-    vec2 textureCoordinate;
+    vec2 tc;
 } vertexData;
 
 void main(){
@@ -40,5 +41,5 @@ void main(){
     vertexData.color = vec3(0.0, worldSpacePos.z + 0.5, 0.0);
     gl_Position = proj_matrix * view_matrix * model_matrix * vec4(position, 1.0); //gl_Position =  model_matrix * vec4(position, 1.0);
         vertexData.color = mat3(transpose(inverse(view_matrix * model_matrix))) * normal;
-    vertexData.textureCoordinate = tcMultiplier * vec2(position.x, position.y);
+    vertexData.tc = textureCoordinate *  tcMultiplier ;
 }

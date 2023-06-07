@@ -236,7 +236,7 @@ class Scene(private val window: GameWindow) {
 
 
 
-        val imageData: ByteBuffer = BufferUtils.createByteBuffer(512*512*4)
+
 
 
 

@@ -4,7 +4,7 @@
 in struct VertexData
 {
     vec3 color;
-    vec2 textureCoordinate;
+    vec2 tc;
 } vertexData;
 
 uniform sampler2D material_emissive;
@@ -18,6 +18,6 @@ void main(){
                 float intensityy = abs(normalized_normal.y);
                 float intensityz = abs(normalized_normal.z);
                 color = vec4(intensityx, intensityy, intensityz, 1.0);*/
-    vec4 emissiveColor = texture(material_emissive, vertexData.textureCoordinate);
+    vec4 emissiveColor = texture2D(material_emissive, vertexData.tc);
     color = vec4(emissiveColor.rgb, 1.0);
 }
