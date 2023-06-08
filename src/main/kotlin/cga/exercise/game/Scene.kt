@@ -232,7 +232,7 @@ class Scene(private val window: GameWindow) {
         /*
         renderable.scale(Vector3f(0.5f, 0.5f, 0.5f))
         renderable.rotate(180f,0f,0f)*/
-        //renderable.scale(Vector3f(0.7f, 0.7f, 0.7f))
+
 
 
 
@@ -277,7 +277,7 @@ class Scene(private val window: GameWindow) {
 
         renderable2 = motorrad
         renderable = Renderable(mutableListOf<Mesh>(groundMesh))
-
+        renderable.scale(Vector3f(25.7f, 25.7f, 25.7f))
         camera.parent = motorrad
     }
 
@@ -326,22 +326,21 @@ class Scene(private val window: GameWindow) {
     }
 
     fun update(dt: Float, t: Float) {
-    if (window.getKeyState(GLFW_KEY_W) == true) {
-        motorrad.scale(Vector3f(1.02f, 1.02f, 1.02f))
-        //camera.translate(Vector3f(0.0f,0.0f,-2.0f))
-    }
-    if (window.getKeyState(GLFW_KEY_A) == true) {
-        motorrad.rotate(0f,-0.05f,0.00f)
-        //camera.translate(Vector3f(-2.0f,0.0f,0.0f))
-    }
-    if (window.getKeyState(GLFW_KEY_S) == true) {
-        motorrad.scale(Vector3f(0.98f, 0.98f, 0.98f))
-        //camera.translate(Vector3f(0.0f,0.0f,2.0f))
-    }
-    if (window.getKeyState(GLFW_KEY_D) == true) {
-        motorrad.rotate(0f,0.05f,0.0f)
-        //camera.translate(Vector3f(2.0f,0.0f,0.0f))
-    }
+
+        if (window.getKeyState(GLFW_KEY_W) == true) {
+            val forward = Vector3f(0f, 0f, -1f).mul(0.1f)
+            motorrad.translate(forward)
+        }
+        if (window.getKeyState(GLFW_KEY_D) == true) {
+            motorrad.rotate(0f, -0.05f, 0.0f)
+        }
+        if (window.getKeyState(GLFW_KEY_S) == true) {
+            val backward = Vector3f(0f, 0f, -1f).mul(-0.1f)
+            motorrad.translate(backward)
+        }
+        if (window.getKeyState(GLFW_KEY_A) == true) {
+            motorrad.rotate(0f, 0.05f, 0.0f)
+        }
     }
     fun onKey(key: Int, scancode: Int, action: Int, mode: Int) {}
 
