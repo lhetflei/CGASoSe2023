@@ -6,8 +6,7 @@ import org.lwjgl.opengl.EXTTextureFilterAnisotropic
 import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL11.GL_TEXTURE
 import org.lwjgl.opengl.GL13
-import org.lwjgl.opengl.GL20.glGetUniformLocation
-import org.lwjgl.opengl.GL20.glUniform1i
+import org.lwjgl.opengl.GL20.*
 import org.lwjgl.opengl.GL30
 import org.lwjgl.stb.STBImage
 import java.nio.ByteBuffer
@@ -55,20 +54,22 @@ class Texture2D(imageData: ByteBuffer, width: Int, height: Int, genMipMaps: Bool
         // todo 3.1
         texID = GL11.glGenTextures()
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, texID)
-        //setTexParams(GL11.GL_REPEAT, GL11.GL_REPEAT, GL11.GL_LINEAR, GL11.GL_LINEAR)
+        setTexParams(GL11.GL_CLAMP, GL11.GL_CLAMP, GL11.GL_LINEAR_MIPMAP_LINEAR, GL11.GL_LINEAR_MIPMAP_LINEAR)
         GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, width, height, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, imageData)
         if (genMipMaps) {
             GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D)
         }
+
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0)
     }
 
     override fun setTexParams(wrapS: Int, wrapT: Int, minFilter: Int, magFilter: Int) {
         // todo 3.1
-        GL11.glTexParameteri(GL_TEXTURE, GL11.GL_TEXTURE_WRAP_S, wrapS)
+        GL11.glTexParameteri(GL_TEXTURE, GL_TEXTURE_WRAP_S,wrapS)
         GL11.glTexParameteri(GL_TEXTURE, GL11.GL_TEXTURE_WRAP_T, wrapT)
         GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, minFilter)
         GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, magFilter)
+        GL11.glTexParameterf(GL11.GL_TEXTURE_2D,EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT,16.0f)
     }
 
     override fun bind(textureUnit: Int) {

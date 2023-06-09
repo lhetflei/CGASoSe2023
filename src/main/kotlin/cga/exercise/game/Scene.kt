@@ -248,9 +248,9 @@ class Scene(private val window: GameWindow) {
 
 
         ground.bind(1)
+
         ground.setTexParams(1,1,1,1)
 
-        GL11.glTexParameterf(GL11.GL_TEXTURE_2D,EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT,16.0f)
 
         ground.unbind()
 
@@ -332,14 +332,14 @@ class Scene(private val window: GameWindow) {
             motorrad.translate(forward)
         }
         if (window.getKeyState(GLFW_KEY_D) == true) {
-            motorrad.rotate(0f, -0.05f, 0.0f)
+            motorrad.rotate(0f, -0.03f, 0.0f)
         }
         if (window.getKeyState(GLFW_KEY_S) == true) {
             val backward = Vector3f(0f, 0f, -1f).mul(-0.1f)
             motorrad.translate(backward)
         }
         if (window.getKeyState(GLFW_KEY_A) == true) {
-            motorrad.rotate(0f, 0.05f, 0.0f)
+            motorrad.rotate(0f, 0.03f, 0.0f)
         }
     }
     fun onKey(key: Int, scancode: Int, action: Int, mode: Int) {}
