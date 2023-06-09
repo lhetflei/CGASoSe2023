@@ -249,7 +249,7 @@ class Scene(private val window: GameWindow) {
 
         ground.bind(1)
 
-        ground.setTexParams(GL_TEXTURE_WRAP_S,GL_TEXTURE_WRAP_T, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR)
+        ground.setTexParams(GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR)
 
 
         ground.unbind()
@@ -328,14 +328,14 @@ class Scene(private val window: GameWindow) {
     fun update(dt: Float, t: Float) {
 
         if (window.getKeyState(GLFW_KEY_W) == true) {
-            val forward = Vector3f(0f, 0f, -1f).mul(0.1f)
+            val forward = Vector3f(0f, 0f, -0.1f)
             motorrad.translate(forward)
         }
         if (window.getKeyState(GLFW_KEY_D) == true) {
             motorrad.rotate(0f, -0.03f, 0.0f)
         }
         if (window.getKeyState(GLFW_KEY_S) == true) {
-            val backward = Vector3f(0f, 0f, -1f).mul(-0.1f)
+            val backward = Vector3f(0f, 0f, 0.1f)
             motorrad.translate(backward)
         }
         if (window.getKeyState(GLFW_KEY_A) == true) {
