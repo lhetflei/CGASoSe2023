@@ -249,7 +249,7 @@ class Scene(private val window: GameWindow) {
 
         ground.bind(1)
 
-        ground.setTexParams(1,1,1,1)
+        ground.setTexParams(GL_TEXTURE_WRAP_S,GL_TEXTURE_WRAP_T, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR)
 
 
         ground.unbind()
