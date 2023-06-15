@@ -8,6 +8,9 @@ in struct VertexData
 } vertexData;
 
 uniform sampler2D material_emissive;
+uniform sampler2D material_diffuse;
+uniform sampler2D material_specular;
+float shininess;
 //fragment shader output
 out vec4 color;
 
