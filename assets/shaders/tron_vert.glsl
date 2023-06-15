@@ -18,6 +18,8 @@ uniform mat4 model_matrix = mat4(1.0, 0.0, 0.0, 0.0,
 // camera to clipping (2.4.2)
  uniform mat4 proj_matrix;
  uniform vec2 tcMultiplier;
+uniform vec3 lightPosition;
+
 
 // Hint: Packing your data passed to the fragment shader into a struct like this helps to keep the code readable!
 out struct VertexData
@@ -25,6 +27,9 @@ out struct VertexData
 {
     vec3 color;
     vec2 tc;
+    vec3 lightDir;
+    vec3 viewDir;
+    vec3 normal;
 } vertexData;
 
 void main(){
@@ -38,8 +43,11 @@ void main(){
     // Note: z-coordinate must be flipped to get valid NDC coordinates. This will later be hidden in the projection matrix.
     gl_Position = worldSpacePos * vec4(1.0, 1.0, -1.0, 1.0);
     // Green color with some variation due to z coordinate
-    vertexData.color = vec3(0.0, worldSpacePos.z + 0.5, 0.0);
+    //vertexData.color = vec3(0.0, worldSpacePos.z + 0.5, 0.0);
+    //vertexData.color = mat3(transpose(inverse(view_matrix * model_matrix))) * normal;
     gl_Position = proj_matrix * view_matrix * model_matrix * vec4(position, 1.0); //gl_Position =  model_matrix * vec4(position, 1.0);
-        vertexData.color = mat3(transpose(inverse(view_matrix * model_matrix))) * normal;
+    vertexData.normal = transpose(inverse(mat3(view_matrix*model_matrix)))*normal;
     vertexData.tc = textureCoordinate *  tcMultiplier ;
+    vertexData.lightDir = (view_matrix * vec4(lightPosition,1.0)-(view_matrix*worldSpacePos)).xyz;
+    vertexData.viewDir = -(view_matrix*worldSpacePos).xyz;
 }

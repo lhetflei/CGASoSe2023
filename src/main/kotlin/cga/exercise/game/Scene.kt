@@ -5,6 +5,7 @@ import cga.exercise.components.geometry.Material
 import cga.exercise.components.geometry.Mesh
 import cga.exercise.components.geometry.Renderable
 import cga.exercise.components.geometry.VertexAttribute
+import cga.exercise.components.light.PointLight
 import cga.exercise.components.shader.ShaderProgram
 import cga.exercise.components.texture.Texture2D
 import cga.framework.GLError
@@ -44,6 +45,12 @@ class Scene(private val window: GameWindow) {
     var renderable = Renderable(meshlist)
     var renderable2 = Renderable(meshlist)
     var motorrad = Renderable(meshlist)
+
+    val lights: MutableList<PointLight> = mutableListOf()
+    val lightPosition = Vector3f(0f, 5f, 0f) // Anpassen der Lichtposition
+    val lightColor = Vector3f(1f, 1f, 1f) // Anpassen der Lichtfarbe (hier: Weiß)
+
+    val pointLight = PointLight(lightPosition, lightColor)
 
     //scene setup
     init {
@@ -279,6 +286,12 @@ class Scene(private val window: GameWindow) {
         renderable = Renderable(mutableListOf<Mesh>(groundMesh))
         renderable.scale(Vector3f(25.7f, 25.7f, 25.7f))
         camera.parent = motorrad
+
+
+
+        //pointLight.parent = motorrad // Setze das Motorrad als Elternelement des PointLights
+
+        lights.add(pointLight)
     }
 
     fun render(dt: Float, t: Float) {
@@ -304,7 +317,7 @@ class Scene(private val window: GameWindow) {
         camera.bind(staticShader)
 
 
-
+        pointLight.bind(staticShader)
         renderable.render(staticShader)
         motorrad.render(staticShader)
         //renderable2.render(staticShader)

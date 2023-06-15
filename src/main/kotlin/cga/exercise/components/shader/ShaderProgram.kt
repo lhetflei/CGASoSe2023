@@ -76,6 +76,11 @@ class ShaderProgram(vertexShaderPath: String, fragmentShaderPath: String) {
         GL20.glUniform2f(location, value.x, value.y)
     }
 
+    fun setUniform(name: String, value: Vector3f) {
+        val location = GL20.glGetUniformLocation(programID, name)
+        GL20.glUniform3f(location, value.x, value.y,value.z)
+    }
+
     /**
      * Creates a shader object from vertex and fragment shader paths
      * @param vertexShaderPath      vertex shader path
