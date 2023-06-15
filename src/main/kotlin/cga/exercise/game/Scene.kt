@@ -1,5 +1,6 @@
 package cga.exercise.game
 
+import SpotLight
 import cga.exercise.components.camera.TronCamera
 import cga.exercise.components.geometry.Material
 import cga.exercise.components.geometry.Mesh
@@ -51,6 +52,9 @@ class Scene(private val window: GameWindow) {
     val lightColor = Vector3f(1f, 1f, 1f) // Anpassen der Lichtfarbe (hier: Weiß)
 
     val pointLight = PointLight(lightPosition, lightColor)
+
+    val Spotlights: MutableList<SpotLight> = mutableListOf()
+    val SpotLight = SpotLight(Vector3f(0f,5f,0f),Vector3f(1f,1f,1f),90f,90f)
 
     //scene setup
     init {
@@ -288,10 +292,11 @@ class Scene(private val window: GameWindow) {
         camera.parent = motorrad
 
 
-
-        //pointLight.parent = motorrad // Setze das Motorrad als Elternelement des PointLights
+        SpotLight.parent = motorrad
+        pointLight.parent = motorrad // Setze das Motorrad als Elternelement des PointLights
 
         lights.add(pointLight)
+        Spotlights.add(SpotLight)
     }
 
     fun render(dt: Float, t: Float) {
@@ -316,7 +321,7 @@ class Scene(private val window: GameWindow) {
         camera.updateProjectionMatrix()
         camera.bind(staticShader)
 
-
+        SpotLight.bind(staticShader, camera.getCalculateViewMatrix())
         pointLight.bind(staticShader)
         renderable.render(staticShader)
         motorrad.render(staticShader)

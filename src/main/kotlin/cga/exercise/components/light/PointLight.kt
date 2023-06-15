@@ -6,7 +6,7 @@ import org.joml.Vector3f
 import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL20
 
-class PointLight(initialPosition: Vector3f, private val lightColor: Vector3f) : Transformable() , IPointLight {
+open class PointLight(initialPosition: Vector3f, private val lightColor: Vector3f) : Transformable() , IPointLight {
 
     init {
         translate(initialPosition)
