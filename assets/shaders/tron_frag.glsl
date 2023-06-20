@@ -61,10 +61,9 @@ void main()
     float intensity = clamp((theta - gamma) / (phi - gamma), 0.0, 1.0);
 
     // Apply spotlight intensity to diffuse and specular terms
-    diffuseTerm *= intensity;
-    specularTerm *= intensity;
 
-    color = ambientTerm + diffuseTerm + specularTerm;
+
+    color = ambientTerm+ diffuseTerm*intensity+ diffuseTerm + specularTerm+specularTerm*intensity;
 }
 
 
