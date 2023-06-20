@@ -26,6 +26,7 @@ import org.lwjgl.opengl.GL30.*
 import org.lwjgl.stb.STBImage
 import java.nio.ByteBuffer
 import cga.framework.ModelLoader.loadModel
+import kotlin.math.cos
 
 
 /**
@@ -47,14 +48,14 @@ class Scene(private val window: GameWindow) {
     var renderable2 = Renderable(meshlist)
     var motorrad = Renderable(meshlist)
 
-    val lights: MutableList<PointLight> = mutableListOf()
+
     val lightPosition = Vector3f(50f, 10f, -70f) // Anpassen der Lichtposition
-    val lightColor = Vector3f(0f, 1f, 0f) // Anpassen der Lichtfarbe (hier: Weiß)
+    val lightColor = Vector3f(1f, 1f, 1f) // Anpassen der Lichtfarbe (hier: Weiß)
 
     val pointLight = PointLight(lightPosition, lightColor)
 
-    val Spotlights: MutableList<SpotLight> = mutableListOf()
-    val SpotLight = SpotLight(Vector3f(0f,5f,0f),Vector3f(1f,0f,0f),9f,9f)
+    val pointLight2 = PointLight(Vector3f(-50f, 10f, -70f), Vector3f(1.0f,0.0f,1.0f))
+    val SpotLight = SpotLight(Vector3f(-50f,5f,0f),Vector3f(1f,0f,0f),1f,1f)
 
     //scene setup
     init {
@@ -78,133 +79,7 @@ class Scene(private val window: GameWindow) {
         camera.translate(Vector3f(0.0f, 0.0f, 4.0f))
 
 
-/*
-        //Initialien DP
-         private val vertices = floatArrayOf(
-// Buchstabe D:
-        -0.75f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
-        -0.75f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
-        -0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-        -0.25f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-        -0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-        -0.25f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
-// Buchstabe P:
-        0.25f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
-        0.25f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
-        0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-        0.75f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-        0.75f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-        0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-        0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f
 
-    )
-    val indices = intArrayOf(
-        // Indizes für den Buchstaben D:
-        0,1,2,
-        0,4,5,
-        2,3,4,
-
-        //Indizes für P:
-        6,7,8,
-        8,6,12,
-        8,9,11,
-        8,9,10
-
-    )
-    val vertices = floatArrayOf(
-                //P
-                0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-                0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-                0.1f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-                0.1f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-                0.1f, 0.9f, 0.0f, 1.0f, 0.0f, 0.0f,
-                0.5f, 0.9f, 0.0f, 1.0f, 0.0f, 0.0f,
-                0.5f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-                0.4f, 0.9f, 0.0f, 1.0f, 0.0f, 0.0f,
-                0.4f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-                0.1f, 0.6f, 0.0f, 1.0f, 0.0f, 0.0f,
-                0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-                0.5f, 0.6f, 0.0f, 1.0f, 0.0f, 0.0f,
-                0.1f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-                //K
-                0.7f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-                0.7f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-                0.8f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-                0.8f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-                0.8f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-                0.9f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-                1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-                1.0f, 0.9f, 0.0f, 1.0f, 0.0f, 0.0f,
-                1.0f, 0.1f, 0.0f, 1.0f, 0.0f, 0.0f,
-                1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-
-        )
-        val indices = intArrayOf(
-                //P
-                0, 1, 2,
-                2, 3, 0,
-                4,5,3,
-                6,3,5,
-                6,8,10,
-                6,7,8,
-                10,11,12,
-                12,11,9,
-                //K
-                16,14,13,
-                16,15,14,
-                20,17,18,
-                20,19,17,
-                21,18,17,
-                17,22,21
-        )
-
-
-
-        */
-        //1.2.4 Initialien
-        /*
-        val vertices = floatArrayOf(
-                //L
-                -0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-                -0.4f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-                -0.4f, 0.4f, 0.0f, 0.0f, 1.0f, 0.0f,
-                -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-                -0.4f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-                0.1f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-                0.1f, -0.4f, 0.0f, 1.0f, 0.0f, 0.0f,
-                -0.5f, -0.4f, 0.0f, 1.0f, 0.0f, 0.0f,
-                //H
-                0.4f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-                0.5f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-                0.4f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-                0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-                0.7f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-                0.8f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-                0.7f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-                0.8f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-                0.5f, 0.4f, 0.0f, 0.0f, 0.0f, 1.0f,
-                0.7f, 0.4f, 0.0f, 0.0f, 0.0f, 1.0f,
-                0.5f, 0.3f, 0.0f, 0.0f, 1.0f, 0.0f,
-                0.7f, 0.3f, 0.0f, 1.0f, 0.0f, 0.0f,
-
-        )
-
-        val indices = intArrayOf(
-                //L
-                0, 2, 1,
-                0, 3, 2,
-                3, 4, 2,
-                4, 5, 6,
-                7, 4, 6,
-                //H
-                8, 10, 9,
-                9, 10 ,11,
-                12,14,13,
-                13,14,15,
-                16,18,17,
-                17,18,19
-        )
-*/
 
         val res = loadOBJ("assets/models/ground.obj", true, true)
 
@@ -293,10 +168,8 @@ class Scene(private val window: GameWindow) {
 
 
         SpotLight.parent = motorrad
-        pointLight.parent = motorrad // Setze das Motorrad als Elternelement des PointLights
 
-        lights.add(pointLight)
-        Spotlights.add(SpotLight)
+
     }
 
     fun render(dt: Float, t: Float) {
@@ -321,8 +194,9 @@ class Scene(private val window: GameWindow) {
         camera.updateProjectionMatrix()
         camera.bind(staticShader)
 
-
         pointLight.bind(staticShader)
+        //pointLight2.bind(staticShader)
+
         SpotLight.bind(staticShader, camera.getCalculateViewMatrix())
         motorrad.render(staticShader)
         renderable.render(staticShader)

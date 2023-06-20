@@ -1,5 +1,5 @@
 
-
+/*
 #version 330 core
 
 // todo 2.1.2
@@ -17,6 +17,7 @@ uniform mat4 view_matrix;
 uniform mat4 proj_matrix;
 uniform vec2 tcMultiplier;
 uniform vec3 lightPosition;
+
 
 // Hint: Packing your data passed to the fragment shader into a struct like this helps to keep the code readable!
 out struct VertexData
@@ -48,17 +49,14 @@ void main()
     vertexData.tc = textureCoordinate * tcMultiplier;
 
     // Calculate the light direction vector in view space
-    vertexData.lightDir = (view_matrix * vec4(lightPosition, 1.0) - viewSpacePos).xyz;
-
-    // Calculate the view direction vector in view space
-    vertexData.viewDir = -viewSpacePos.xyz;
-
-
-}
 
 
 
-/*#version 330 core
+}*/
+
+
+
+#version 330 core
 
 // todo 2.1.2
 layout(location = 0) in vec3 position;
@@ -112,4 +110,4 @@ void main(){
     vertexData.lightDir = (view_matrix * vec4(lightPosition,1.0)-(view_matrix*worldSpacePos)).xyz;
     vertexData.viewDir = -(view_matrix*worldSpacePos).xyz;
 
-}*/
+}

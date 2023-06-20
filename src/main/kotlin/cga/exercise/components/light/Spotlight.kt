@@ -19,9 +19,9 @@ open class SpotLight(
 
         // Übergeben Sie die Kegeldefinitionen und den Richtungsvektor an den Fragment-Shader
         shaderProgram.use()
-        shaderProgram.setUniform("innerConeAngle", cos(innerConeAngle))
+        shaderProgram.setUniform("spotLight.innerConeAngle", cos(innerConeAngle))
         shaderProgram.setUniform("spotLight.outerConeAngle", cos(outerConeAngle))
-        shaderProgram.setUniform("spotLight.direction", getWorldZAxis())
+        shaderProgram.setUniform("spotLight.direction", getZAxis())
     }
 
 
