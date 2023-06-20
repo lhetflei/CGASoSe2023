@@ -12,8 +12,17 @@ class Material(var diff: Texture2D,
 
     fun bind(shaderProgram: ShaderProgram) {
         // todo 3.2
-        emit.bind(0)
-        shaderProgram.setUniform("material_emissive", 0)
+        emit.bind(1)
+        shaderProgram.setUniform("material_emissive", 1)
+
+        diff.bind(2)
+        shaderProgram.setUniform("material_diffuse", 2)
+
+        specular.bind(3)
+        shaderProgram.setUniform("material_specular", 3)
+
+
+        shaderProgram.setUniform("shininess", shininess)
 
         // Set the tcMultiplier uniform variable
         shaderProgram.setUniform("tcMultiplier", tcMultiplier)

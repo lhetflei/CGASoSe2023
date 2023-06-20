@@ -1,3 +1,5 @@
+
+
 #version 330 core
 
 // todo 2.1.2
@@ -50,7 +52,10 @@ void main()
 
     // Calculate the view direction vector in view space
     vertexData.viewDir = -viewSpacePos.xyz;
+
+
 }
+
 
 
 /*#version 330 core

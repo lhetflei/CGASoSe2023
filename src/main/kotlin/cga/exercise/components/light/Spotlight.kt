@@ -7,7 +7,7 @@ import cga.exercise.components.light.PointLight
 import org.joml.Matrix4f
 import kotlin.math.cos
 
-class SpotLight(
+open class SpotLight(
         position: Vector3f,
         color: Vector3f,
         private val innerConeAngle: Float,
@@ -18,7 +18,8 @@ class SpotLight(
 
 
         // Übergeben Sie die Kegeldefinitionen und den Richtungsvektor an den Fragment-Shader
-        shaderProgram.setUniform("spotLight.innerConeAngle", cos(innerConeAngle))
+        shaderProgram.use()
+        shaderProgram.setUniform("innerConeAngle", cos(innerConeAngle))
         shaderProgram.setUniform("spotLight.outerConeAngle", cos(outerConeAngle))
         shaderProgram.setUniform("spotLight.direction", getWorldZAxis())
     }

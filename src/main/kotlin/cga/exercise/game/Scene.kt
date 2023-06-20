@@ -48,13 +48,13 @@ class Scene(private val window: GameWindow) {
     var motorrad = Renderable(meshlist)
 
     val lights: MutableList<PointLight> = mutableListOf()
-    val lightPosition = Vector3f(0f, 5f, 0f) // Anpassen der Lichtposition
-    val lightColor = Vector3f(1f, 1f, 1f) // Anpassen der Lichtfarbe (hier: Weiß)
+    val lightPosition = Vector3f(50f, 10f, -70f) // Anpassen der Lichtposition
+    val lightColor = Vector3f(0f, 1f, 0f) // Anpassen der Lichtfarbe (hier: Weiß)
 
     val pointLight = PointLight(lightPosition, lightColor)
 
     val Spotlights: MutableList<SpotLight> = mutableListOf()
-    val SpotLight = SpotLight(Vector3f(0f,5f,0f),Vector3f(1f,1f,1f),90f,90f)
+    val SpotLight = SpotLight(Vector3f(0f,5f,0f),Vector3f(1f,0f,0f),9f,9f)
 
     //scene setup
     init {
@@ -258,7 +258,7 @@ class Scene(private val window: GameWindow) {
         val ground = Texture2D("assets/textures/ground_emit.png", true)
 
 
-        ground.bind(1)
+        ground.bind(0)
 
         ground.setTexParams(GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR)
 
@@ -321,10 +321,13 @@ class Scene(private val window: GameWindow) {
         camera.updateProjectionMatrix()
         camera.bind(staticShader)
 
-        SpotLight.bind(staticShader, camera.getCalculateViewMatrix())
+
         pointLight.bind(staticShader)
-        renderable.render(staticShader)
+        SpotLight.bind(staticShader, camera.getCalculateViewMatrix())
         motorrad.render(staticShader)
+        renderable.render(staticShader)
+
+
         //renderable2.render(staticShader)
 
 
