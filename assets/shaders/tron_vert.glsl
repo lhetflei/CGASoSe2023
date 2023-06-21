@@ -71,9 +71,9 @@ uniform mat4 model_matrix = mat4(1.0, 0.0, 0.0, 0.0,
                                  0.0, 0.0, 0.0, 1.0);
 
 
-// world to camera (2.4.2)
+
  uniform mat4 view_matrix;
-// camera to clipping (2.4.2)
+
  uniform mat4 proj_matrix;
  uniform vec2 tcMultiplier;
 

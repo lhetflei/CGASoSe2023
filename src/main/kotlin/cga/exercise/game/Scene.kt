@@ -132,7 +132,7 @@ class Scene(private val window: GameWindow) {
 
         val spec = Texture2D("assets/textures/ground_spec.png", true)
         val ground = Texture2D("assets/textures/ground_emit.png", true)
-
+        val diff =Texture2D("assets/textures/ground_diff.png", true)
 
         ground.bind(0)
 
@@ -145,7 +145,7 @@ class Scene(private val window: GameWindow) {
 
         val floorMaterial = Material(
 
-                Texture2D("assets/textures/ground_diff.png", true),
+                diff,
                 ground,
                 spec,
                 60.0f,
@@ -168,7 +168,7 @@ class Scene(private val window: GameWindow) {
         camera.parent = motorrad
 
         spotLight.rotate(Math.toRadians(-5f),0f,0f)
-        //spotLight.parent = motorrad
+        spotLight.parent = motorrad
 
 
     }
@@ -196,7 +196,7 @@ class Scene(private val window: GameWindow) {
         camera.bind(staticShader)
 
         pointLight.bind(staticShader,camera.getCalculateViewMatrix())
-        //pointLight2.bind(staticShader)
+        pointLight2.bind(staticShader,camera.getCalculateViewMatrix())
 
         spotLight.bind(staticShader, camera.getCalculateViewMatrix())
         motorrad.render(staticShader)
