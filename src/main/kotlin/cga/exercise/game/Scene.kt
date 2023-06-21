@@ -27,6 +27,7 @@ import org.lwjgl.stb.STBImage
 import java.nio.ByteBuffer
 import cga.framework.ModelLoader.loadModel
 import kotlin.math.cos
+import org.joml.Math
 
 
 /**
@@ -55,7 +56,7 @@ class Scene(private val window: GameWindow) {
     val pointLight = PointLight(lightPosition, lightColor)
 
     val pointLight2 = PointLight(Vector3f(-50f, 10f, -70f), Vector3f(1.0f,0.0f,1.0f))
-    val SpotLight = SpotLight(Vector3f(-50f,5f,0f),Vector3f(1f,0f,0f),1f,1f)
+    val spotLight = SpotLight(Vector3f(0f,2f,0f),Vector3f(5f,0f,0f),Math.toRadians(20f),org.joml.Math.toRadians(30f))
 
     //scene setup
     init {
@@ -166,8 +167,8 @@ class Scene(private val window: GameWindow) {
         renderable.scale(Vector3f(25.7f, 25.7f, 25.7f))
         camera.parent = motorrad
 
-
-        SpotLight.parent = motorrad
+        spotLight.rotate(Math.toRadians(-5f),0f,0f)
+        //spotLight.parent = motorrad
 
 
     }
@@ -194,10 +195,10 @@ class Scene(private val window: GameWindow) {
         camera.updateProjectionMatrix()
         camera.bind(staticShader)
 
-        pointLight.bind(staticShader)
+        pointLight.bind(staticShader,camera.getCalculateViewMatrix())
         //pointLight2.bind(staticShader)
 
-        SpotLight.bind(staticShader, camera.getCalculateViewMatrix())
+        spotLight.bind(staticShader, camera.getCalculateViewMatrix())
         motorrad.render(staticShader)
         renderable.render(staticShader)
 
