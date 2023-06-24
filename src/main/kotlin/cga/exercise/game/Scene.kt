@@ -105,10 +105,10 @@ class Scene(private val window: GameWindow) {
 
 
 
-        //enableFaceCulling(GL_CW, GL_FRONT)
-        enableDepthTest(GL_LESS)
 
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f); GLError.checkThrow() //blau
+        enableDepthTest(GL_LESS) //Tiefentest, werden Pixel in der richtigen Reihenfolge gerendert
+
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f); GLError.checkThrow() //schwarze hintergrundfarbe, alpha1.0f völlige deckkraft
         //glClearColor(0.0f, 0.0f, 0.0f, 1.0f); GLError.checkThrow() //schwarz
         //val vertexAttribute = arrayOf<VertexAttribute>(VertexAttribute(3, GL_FLOAT,24,0),VertexAttribute(3, GL_FLOAT,24,12))
         //1.2 mesh
@@ -158,7 +158,14 @@ class Scene(private val window: GameWindow) {
         groundMesh = Mesh(objMesh.vertexData, objMesh.indexData, vertexAttributes, floorMaterial)
         motorrad= ModelLoader.loadModel("assets/Light Cycle/Light Cycle/HQ_Movie cycle.obj", -1.5708f, 1.5708f, 0f)!!
 
+
+
         motorrad.scale(Vector3f(0.8f, 0.8f, 0.8f))
+
+        val desiredGammaValue = 2.2f // Beispielwert für den gewünschten Gammawert
+        staticShader.use()
+        staticShader.setUniform("gammaValue", desiredGammaValue)
+
 
 
 

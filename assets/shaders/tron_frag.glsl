@@ -1,4 +1,3 @@
-
 #version 330 core
 
 // Input from vertex shader
@@ -23,25 +22,35 @@ struct SpotLight {
     vec3 lightColor;
     float innerConeAngle;
     float outerConeAngle;
-} ;
+};
+
 uniform SpotLight spotLight;
 uniform PointLight pointLight;
 uniform sampler2D material_emissive;
 uniform sampler2D material_diffuse;
 uniform sampler2D material_specular;
 uniform float shininess;
-
-
+uniform float gammaValue;  // Gammawert
 
 out vec4 color;
 
-vec3 brdf(vec3 n,vec3 l, vec3 v,vec3 ms,vec3 md,float k )
-{
-    vec3 r=reflect(-l, n);
-    vec3 c=max(0.0,dot(n,l))*md;
-    vec3 d =pow(max(0.0,dot(v,r)),k)*ms;
+// Gammakorrektur-Funktion
+float gamma(float value, float gammaValue) {
+    return pow(value, 1.0 / gammaValue);
+}
 
-    return c+d;
+// Inverse Gammakorrektur-Funktion
+vec3 invgamma(vec3 value, float gammaValue) {
+    return pow(value, vec3(gammaValue));
+}
+
+vec3 brdf(vec3 n, vec3 l, vec3 v, vec3 ms, vec3 md, float k)
+{
+    vec3 r = reflect(-l, n);
+    vec3 c = max(0.0, dot(n, l)) * md;
+    vec3 d = pow(max(0.0, dot(v, r)), k) * ms;
+
+    return c + d;
 }
 
 void main()
@@ -54,32 +63,39 @@ void main()
     vec4 emissiveCol = texture(material_emissive, vertexData.tc);
     vec4 diffuseCol = texture(material_diffuse, vertexData.tc);
     vec4 specularCol = texture(material_specular, vertexData.tc);
-    color= vec4(0,0,0,1);
+    color = vec4(0, 0, 0, 1);
     vec4 ambientCol = vec4(0.04, 0.04, 0.04, 1.0);
+
+    // Gammakorrektur für diffuse, specular und emissive Farbwerte
+    vec3 linearDiffuseCol = vec3(diffuseCol.xyz);  // Hier muss die Gammakorrektur angewendet werden
+    vec3 linearSpecularCol = vec3(specularCol.xyz);  // Hier muss die Gammakorrektur angewendet werden
+    vec3 linearEmissiveCol = vec3(emissiveCol.xyz);  // Hier muss die Gammakorrektur angewendet werden
+
     //ambient color
-    color.xyz +=vec3(ambientCol);
+    color.xyz += vec3(ambientCol);
+
     //emissive
-    color.xyz += vec3(emissiveCol);
-
-
-
+    color.xyz += linearEmissiveCol;
 
     //pointlight
-    color.xyz += brdf(normal,lightDirpoint,viewDir,specularCol.xyz,diffuseCol.xyz,shininess)*pointLight.lightColor;
-
+    color.xyz += brdf(normal, lightDirpoint, viewDir, linearSpecularCol, linearDiffuseCol, shininess) * pointLight.lightColor;
 
     vec3 lightDirection = normalize(spotLight.direction);
     float theta = dot(-lightDirspot, lightDirection);
     float gamma = spotLight.outerConeAngle;
     float phi = spotLight.innerConeAngle;
     float intensity = clamp((theta - gamma) / (phi - gamma), 0.0, 1.0);
-    color.xyz += brdf(normal,lightDirspot,viewDir,specularCol.xyz,diffuseCol.xyz,shininess) * spotLight.lightColor * intensity;
+    color.xyz += brdf(normal, lightDirspot, viewDir, linearSpecularCol, linearDiffuseCol, shininess) * spotLight.lightColor * intensity;
+
+    // Inverse Gammakorrektur, um das Ergebnis in sRGB oder Gamma zu konvertieren
+    color.xyz = invgamma(color.xyz, gammaValue);
+
+    color.a = 1.0;
+}
 
 
 
     //color = ambientTerm+ diffuseTerm*intensity+ diffuseTerm + specularTerm+specularTerm*intensity;
-
-}
 
 
 /*#version 330 core

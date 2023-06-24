@@ -15,15 +15,15 @@ class TronCamera : Transformable(), ICamera {
     private var projectionMatrix: Matrix4f = Matrix4f() // Projection-Matrix
 
     init {
-
+        //initialisiert Zustand einer Klasse
     }
 
     override fun getCalculateViewMatrix(): Matrix4f {
-        return viewMatrix
+        return viewMatrix   //Kameramatrix, simuliert Kameraperspektive
     }
 
     override fun getCalculateProjectionMatrix(): Matrix4f {
-        return projectionMatrix
+        return projectionMatrix  //Perspektive und Sichtbereich
     }
 
     private fun calculateViewMatrix() {
