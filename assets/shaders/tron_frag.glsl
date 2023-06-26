@@ -36,8 +36,13 @@ uniform float gammaValue;  // Gammawert
 out vec4 color;
 
 // Gammakorrektur-Funktion
-float gamma(float value, float gammaValue) {
+/*float gamma(float value, float gammaValue) {
     return pow(value, 1.0 / gammaValue);
+}*/
+
+vec3 gamma(vec3 C_linear) {
+    float gammaValue = 2.2;  // Gamma value, adjust as needed
+    return pow(C_linear, vec3(1.0 / gammaValue));
 }
 
 // Inverse Gammakorrektur-Funktion
@@ -68,9 +73,10 @@ void main()
     vec4 ambientCol = vec4(0.04, 0.04, 0.04, 1.0);
 
     // Gammakorrektur für diffuse, specular und emissive Farbwerte
-    vec3 linearDiffuseCol = vec3(diffuseCol.xyz);  // Hier muss die Gammakorrektur angewendet werden
-    vec3 linearSpecularCol = vec3(specularCol.xyz);  // Hier muss die Gammakorrektur angewendet werden
-    vec3 linearEmissiveCol = vec3(emissiveCol.xyz);  // Hier muss die Gammakorrektur angewendet werden
+
+    vec3 linearDiffuseCol = gamma(diffuseCol.xyz);  // Hier muss die Gammakorrektur angewendet werden
+    vec3 linearSpecularCol = gamma(specularCol.xyz);  // Hier muss die Gammakorrektur angewendet werden
+    vec3 linearEmissiveCol = gamma(emissiveCol.xyz);  // Hier muss die Gammakorrektur angewendet werden
 
     //ambient color
     color.xyz += vec3(ambientCol);
@@ -94,6 +100,7 @@ void main()
     color.xyz += brdf(normal, lightDirspot, viewDir, linearSpecularCol, linearDiffuseCol, shininess) * spotLight.lightColor * intensity;
 
     // Inverse Gammakorrektur, um das Ergebnis in sRGB oder Gamma zu konvertieren
+
     color.xyz = invgamma(color.xyz, gammaValue);
 
     color.a = 1.0;

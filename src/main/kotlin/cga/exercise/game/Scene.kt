@@ -59,7 +59,7 @@ class Scene(private val window: GameWindow) {
     val pointLight2 = PointLight(Vector3f(-50f, 0f, -70f), Vector3f(1.0f,0.0f,1.0f))
     val pointLight3 = PointLight(Vector3f(50f, 0f, -70f), Vector3f(0f,0.0f,1.0f))
     val pointLight4 = PointLight(Vector3f(50f, 0f, 70f), Vector3f(1.0f,0.0f,0.0f))
-    val spotLight = SpotLight(Vector3f(0f,2f,0f),Vector3f(5f,5f,5f),Math.toRadians(20f),org.joml.Math.toRadians(30f))
+    val spotLight = SpotLight(Vector3f(0f,2f,0f),Vector3f(2f,2f,2f),Math.toRadians(20f),org.joml.Math.toRadians(30f))
 
     //scene setup
     init {
