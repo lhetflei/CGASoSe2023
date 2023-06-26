@@ -14,10 +14,10 @@ open class PointLight(initialPosition: Vector3f,  val lightColor: Vector3f) : Tr
         translate(initialPosition)
     }
 
-    override fun bind(shaderProgram: ShaderProgram,viewMatrix: Matrix4f) {
+    override fun bind(shaderProgram: ShaderProgram,viewMatrix: Matrix4f,i:Int) {
         val worldPosition = getWorldPosition()
-        val lightColorUniform = "pointLight.lightColor"
-        val lightPositionUniform = "pointLight.position"
+        val lightColorUniform = "pointLight.lightColor[$i]"
+        val lightPositionUniform = "pointLight.position[$i]"
 
         val color = Vector3f(lightColor)
         val position = Vector3f(worldPosition)

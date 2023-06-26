@@ -78,8 +78,8 @@ uniform mat4 model_matrix = mat4(1.0, 0.0, 0.0, 0.0,
  uniform vec2 tcMultiplier;
 
 struct PointLight {
-    vec3 position;
-    vec3 lightColor;
+    vec3 position[10];
+    vec3 lightColor[10];
 };
 
 struct SpotLight {
@@ -98,7 +98,7 @@ out struct VertexData
 {
     vec3 color;
     vec2 tc;
-    vec3 lightDirpoint;
+    vec3 lightDirpoint[10];
     vec3 lightDirspot;
     vec3 viewDir;
     vec3 normal;
@@ -112,6 +112,9 @@ void main(){
     vertexData.normal = transpose(inverse(mat3(view_matrix*model_matrix)))*normal;
     vertexData.tc = textureCoordinate *  tcMultiplier ;
     vertexData.lightDirspot = spotLight.position-viewpos.xyz;
-    vertexData.lightDirpoint = pointLight.position-viewpos.xyz;
+    for (int i = 0; i < 10; i++) {
+        vertexData.lightDirpoint[i] = pointLight.position[i] - viewpos.xyz;
+    }
+    //vertexData.lightDirpoint = pointLight.position - viewpos.xyz;
 
 }

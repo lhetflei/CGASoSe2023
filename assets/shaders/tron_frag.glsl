@@ -5,15 +5,15 @@ in struct VertexData
 {
     vec3 color;
     vec2 tc;
-    vec3 lightDirpoint;
+    vec3 lightDirpoint[10];
     vec3 lightDirspot;
     vec3 viewDir;
     vec3 normal;
 } vertexData;
 
 struct PointLight {
-    vec3 position;
-    vec3 lightColor;
+    vec3 position[10];
+    vec3 lightColor[10];
 };
 
 struct SpotLight {
@@ -30,6 +30,7 @@ uniform sampler2D material_emissive;
 uniform sampler2D material_diffuse;
 uniform sampler2D material_specular;
 uniform float shininess;
+uniform vec3 emit_col;
 uniform float gammaValue;  // Gammawert
 
 out vec4 color;
@@ -57,10 +58,10 @@ void main()
 {
     vec3 viewDir = normalize(vertexData.viewDir);
     vec3 normal = normalize(vertexData.normal);
-    vec3 lightDirpoint = normalize(vertexData.lightDirpoint);
+    //vec3 lightDirpoint = normalize(vertexData.lightDirpoint);
     vec3 lightDirspot = normalize(vertexData.lightDirspot);
 
-    vec4 emissiveCol = texture(material_emissive, vertexData.tc);
+    vec4 emissiveCol = texture(material_emissive, vertexData.tc)*vec4(emit_col,1.0);
     vec4 diffuseCol = texture(material_diffuse, vertexData.tc);
     vec4 specularCol = texture(material_specular, vertexData.tc);
     color = vec4(0, 0, 0, 1);
@@ -78,7 +79,12 @@ void main()
     color.xyz += linearEmissiveCol;
 
     //pointlight
-    color.xyz += brdf(normal, lightDirpoint, viewDir, linearSpecularCol, linearDiffuseCol, shininess) * pointLight.lightColor;
+    for (int i = 0; i < 10; i++) {
+        vec3 lightDirpoint = normalize(vertexData.lightDirpoint[i]);
+        color.xyz += brdf(normal, lightDirpoint, viewDir, linearSpecularCol, linearDiffuseCol, shininess) * pointLight.lightColor[i];
+    }
+
+    //color.xyz += brdf(normal, lightDirpoint, viewDir, linearSpecularCol, linearDiffuseCol, shininess) * pointLight.lightColor;
 
     vec3 lightDirection = normalize(spotLight.direction);
     float theta = dot(-lightDirspot, lightDirection);

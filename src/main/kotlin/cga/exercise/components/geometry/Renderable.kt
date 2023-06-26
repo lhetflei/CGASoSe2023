@@ -6,11 +6,11 @@ import org.joml.Vector3f
 
 class Renderable(private val meshes: MutableList<Mesh>) : Transformable() , IRenderable {
 
-    override fun render(shaderProgram: ShaderProgram) {
+    override fun render(shaderProgram: ShaderProgram,emitcol:Vector3f) {
 
         shaderProgram.use()
         shaderProgram.setUniform("model_matrix", getWorldModelMatrix())
-
+        shaderProgram.setUniform("emit_col", emitcol)
         for (mesh in meshes) {
 
             mesh.render(shaderProgram)

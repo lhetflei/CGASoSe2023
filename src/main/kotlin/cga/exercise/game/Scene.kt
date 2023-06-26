@@ -49,14 +49,17 @@ class Scene(private val window: GameWindow) {
     var renderable2 = Renderable(meshlist)
     var motorrad = Renderable(meshlist)
 
+    val desiredGammaValue = 2.2f // Beispielwert für den gewünschten Gammawert
 
-    val lightPosition = Vector3f(50f, 10f, -70f) // Anpassen der Lichtposition
+    val lightPosition = Vector3f(-50f, 10f, 70f) // Anpassen der Lichtposition
     val lightColor = Vector3f(1f, 1f, 1f) // Anpassen der Lichtfarbe (hier: Weiß)
 
     val pointLight = PointLight(lightPosition, lightColor)
 
-    val pointLight2 = PointLight(Vector3f(-50f, 10f, -70f), Vector3f(1.0f,0.0f,1.0f))
-    val spotLight = SpotLight(Vector3f(0f,2f,0f),Vector3f(5f,0f,0f),Math.toRadians(20f),org.joml.Math.toRadians(30f))
+    val pointLight2 = PointLight(Vector3f(-50f, 0f, -70f), Vector3f(1.0f,0.0f,1.0f))
+    val pointLight3 = PointLight(Vector3f(50f, 0f, -70f), Vector3f(0f,0.0f,1.0f))
+    val pointLight4 = PointLight(Vector3f(50f, 0f, 70f), Vector3f(1.0f,0.0f,0.0f))
+    val spotLight = SpotLight(Vector3f(0f,2f,0f),Vector3f(5f,5f,5f),Math.toRadians(20f),org.joml.Math.toRadians(30f))
 
     //scene setup
     init {
@@ -162,9 +165,9 @@ class Scene(private val window: GameWindow) {
 
         motorrad.scale(Vector3f(0.8f, 0.8f, 0.8f))
 
-        val desiredGammaValue = 2.2f // Beispielwert für den gewünschten Gammawert
-        staticShader.use()
-        staticShader.setUniform("gammaValue", desiredGammaValue)
+
+
+
 
 
 
@@ -196,18 +199,18 @@ class Scene(private val window: GameWindow) {
         // Normalenmatrix berechnen
         val normalMatrix = Matrix4f(viewMatrix).invert().transpose()
         staticShader.setUniform("normalMatrix", normalMatrix)
-*/
+*/  staticShader.setUniform("gammaValue", desiredGammaValue)
 
         camera.updateViewMatrix()
         camera.updateProjectionMatrix()
         camera.bind(staticShader)
-
-        pointLight.bind(staticShader,camera.getCalculateViewMatrix())
-        pointLight2.bind(staticShader,camera.getCalculateViewMatrix())
-
+        pointLight2.bind(staticShader,camera.getCalculateViewMatrix(),0)
+        pointLight.bind(staticShader,camera.getCalculateViewMatrix(),1)
+        pointLight3.bind(staticShader,camera.getCalculateViewMatrix(),2)
+        pointLight4.bind(staticShader,camera.getCalculateViewMatrix(),3)
         spotLight.bind(staticShader, camera.getCalculateViewMatrix())
-        motorrad.render(staticShader)
-        renderable.render(staticShader)
+        motorrad.render(staticShader, Vector3f(1f,0f,1f))
+        renderable.render(staticShader,Vector3f(0f,1f,0f))
 
 
         //renderable2.render(staticShader)
@@ -247,7 +250,9 @@ class Scene(private val window: GameWindow) {
     }
     fun onKey(key: Int, scancode: Int, action: Int, mode: Int) {}
 
-    fun onMouseMove(xpos: Double, ypos: Double) {}
+    fun onMouseMove(xpos: Double, ypos: Double) {
+
+    }
 
     fun cleanup() {
         //simpleMesh.cleanup()
