@@ -41,7 +41,7 @@ abstract class GameWindow(
     class MousePosition(var xpos: Double, var ypos: Double)
 
     //private data
-    private var m_window: Long = 0
+    var m_window: Long = 0
     /**
      * Returns the current width of the default frame buffer
      * @return width of the default frame buffer

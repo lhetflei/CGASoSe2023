@@ -204,11 +204,14 @@ class Scene(private val window: GameWindow) {
         camera.updateViewMatrix()
         camera.updateProjectionMatrix()
         camera.bind(staticShader)
+
         pointLight2.bind(staticShader,camera.getCalculateViewMatrix(),0)
         pointLight.bind(staticShader,camera.getCalculateViewMatrix(),1)
         pointLight3.bind(staticShader,camera.getCalculateViewMatrix(),2)
         pointLight4.bind(staticShader,camera.getCalculateViewMatrix(),3)
+
         spotLight.bind(staticShader, camera.getCalculateViewMatrix())
+
         motorrad.render(staticShader, Vector3f(1f,0f,1f))
         renderable.render(staticShader,Vector3f(0f,1f,0f))
 
@@ -251,6 +254,10 @@ class Scene(private val window: GameWindow) {
     fun onKey(key: Int, scancode: Int, action: Int, mode: Int) {}
 
     fun onMouseMove(xpos: Double, ypos: Double) {
+        val x_speed = (xpos - window.windowWidth/ 2.0).toFloat() * 0.002f
+        glfwSetCursorPos(window.m_window, window.windowWidth / 2.0, window.windowHeight/ 2.0)
+
+        camera.rotateAroundPoint(0f, -x_speed, 0f, renderable.getWorldPosition())
 
     }
 
