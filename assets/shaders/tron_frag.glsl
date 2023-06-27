@@ -52,9 +52,10 @@ vec3 invgamma(vec3 value, float gammaValue) {
 
 vec3 brdf(vec3 n, vec3 l, vec3 v, vec3 ms, vec3 md, float k,float attenuation)
 {
-    vec3 r = reflect(-l, n);
-    vec3 c = max(0.0, dot(n, l)) * md * attenuation;  // Apply attenuation to diffuse component
-    vec3 d = pow(max(0.0, dot(v, r)), k) * ms * attenuation;  // Apply attenuation to specular component
+    //vec3 r = reflect(-l, n);
+    vec3 h = normalize(l + v);//half-vector blinn-phong
+    vec3 c = max(0.0, dot(n, l)) * md * attenuation;
+    vec3 d = pow(max(0.0, dot(n, h)), k) * ms * attenuation;
 
     return c + d;
 }
