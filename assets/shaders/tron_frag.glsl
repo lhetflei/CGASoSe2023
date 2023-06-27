@@ -50,11 +50,11 @@ vec3 invgamma(vec3 value, float gammaValue) {
     return pow(value, vec3(gammaValue));
 }
 
-vec3 brdf(vec3 n, vec3 l, vec3 v, vec3 ms, vec3 md, float k)
+vec3 brdf(vec3 n, vec3 l, vec3 v, vec3 ms, vec3 md, float k,float attenuation)
 {
     vec3 r = reflect(-l, n);
-    vec3 c = max(0.0, dot(n, l)) * md;
-    vec3 d = pow(max(0.0, dot(v, r)), k) * ms;
+    vec3 c = max(0.0, dot(n, l)) * md * attenuation;  // Apply attenuation to diffuse component
+    vec3 d = pow(max(0.0, dot(v, r)), k) * ms * attenuation;  // Apply attenuation to specular component
 
     return c + d;
 }
@@ -87,7 +87,12 @@ void main()
     //pointlight
     for (int i = 0; i < 10; i++) {
         vec3 lightDirpoint = normalize(vertexData.lightDirpoint[i]);
-        color.xyz += brdf(normal, lightDirpoint, viewDir, linearSpecularCol, linearDiffuseCol, shininess) * pointLight.lightColor[i];
+        float distance = length(vertexData.lightDirpoint[i]);
+        float attenuation = 1.0 / (distance * distance);  // Inverse square law attenuation
+        color.xyz += brdf(normal, lightDirpoint, viewDir, linearSpecularCol, linearDiffuseCol, shininess, attenuation) * pointLight.lightColor[i];
+
+        /*vec3 lightDirpoint = normalize(vertexData.lightDirpoint[i]);
+        color.xyz += brdf(normal, lightDirpoint, viewDir, linearSpecularCol, linearDiffuseCol, shininess) * pointLight.lightColor[i];*/
     }
 
     //color.xyz += brdf(normal, lightDirpoint, viewDir, linearSpecularCol, linearDiffuseCol, shininess) * pointLight.lightColor;
@@ -97,7 +102,7 @@ void main()
     float gamma = spotLight.outerConeAngle;
     float phi = spotLight.innerConeAngle;
     float intensity = clamp((theta - gamma) / (phi - gamma), 0.0, 1.0);
-    color.xyz += brdf(normal, lightDirspot, viewDir, linearSpecularCol, linearDiffuseCol, shininess) * spotLight.lightColor * intensity;
+    color.xyz += brdf(normal, lightDirspot, viewDir, linearSpecularCol, linearDiffuseCol, shininess,1) * spotLight.lightColor * intensity;
 
     // Inverse Gammakorrektur, um das Ergebnis in sRGB oder Gamma zu konvertieren
 
