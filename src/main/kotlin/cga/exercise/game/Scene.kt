@@ -199,7 +199,7 @@ class Scene(private val window: GameWindow) {
         // Normalenmatrix berechnen
         val normalMatrix = Matrix4f(viewMatrix).invert().transpose()
         staticShader.setUniform("normalMatrix", normalMatrix)
-*/  staticShader.setUniform("gammaValue", desiredGammaValue)
+*/      staticShader.setUniform("gammaValue", desiredGammaValue)
 
         camera.updateViewMatrix()
         camera.updateProjectionMatrix()

@@ -1,6 +1,5 @@
 #version 330 core
 
-// Input from vertex shader
 in struct VertexData
 {
     vec3 color;
@@ -31,7 +30,7 @@ uniform sampler2D material_diffuse;
 uniform sampler2D material_specular;
 uniform float shininess;
 uniform vec3 emit_col;
-uniform float gammaValue;  // Gammawert
+uniform float gammaValue;
 
 out vec4 color;
 
@@ -75,9 +74,9 @@ void main()
 
     // Gammakorrektur für diffuse, specular und emissive Farbwerte
 
-    vec3 linearDiffuseCol = gamma(diffuseCol.xyz);  // Hier muss die Gammakorrektur angewendet werden
-    vec3 linearSpecularCol = gamma(specularCol.xyz);  // Hier muss die Gammakorrektur angewendet werden
-    vec3 linearEmissiveCol = gamma(emissiveCol.xyz);  // Hier muss die Gammakorrektur angewendet werden
+    vec3 linearDiffuseCol = gamma(diffuseCol.xyz);
+    vec3 linearSpecularCol = gamma(specularCol.xyz);
+    vec3 linearEmissiveCol = gamma(emissiveCol.xyz);
 
     //ambient color
     color.xyz += vec3(ambientCol);
@@ -89,7 +88,7 @@ void main()
     for (int i = 0; i < 10; i++) {
         vec3 lightDirpoint = normalize(vertexData.lightDirpoint[i]);
         float distance = length(vertexData.lightDirpoint[i]);
-        float attenuation = 1.0 / (distance * distance);  // Inverse square law attenuation
+        float attenuation = 1.0 / (distance * distance);  // attenuation
         color.xyz += brdf(normal, lightDirpoint, viewDir, linearSpecularCol, linearDiffuseCol, shininess, attenuation) * pointLight.lightColor[i];
 
         /*vec3 lightDirpoint = normalize(vertexData.lightDirpoint[i]);

@@ -92,7 +92,7 @@ struct SpotLight {
 uniform SpotLight spotLight;
 uniform PointLight pointLight;
 
-// Hint: Packing your data passed to the fragment shader into a struct like this helps to keep the code readable!
+
 out struct VertexData
 
 {
