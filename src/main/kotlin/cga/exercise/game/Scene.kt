@@ -51,14 +51,14 @@ class Scene(private val window: GameWindow) {
 
     val desiredGammaValue = 2.2f // Beispielwert für den gewünschten Gammawert
 
-    val lightPosition = Vector3f(-15f, 5f, 15f) // Anpassen der Lichtposition
-    val lightColor = Vector3f(30f, 30f, 30f) // Anpassen der Lichtfarbe (hier: Weiß)
+    val lightPosition = Vector3f(0f, 10f, 0f) // Anpassen der Lichtposition
+    val lightColor = Vector3f(20f, 20f, 20f) // Anpassen der Lichtfarbe (hier: Weiß)
 
     val pointLight = PointLight(lightPosition, lightColor)
 
-    val pointLight2 = PointLight(Vector3f(-15f, 5f, -15f), Vector3f(30.0f,0.0f,30.0f))
-    val pointLight3 = PointLight(Vector3f(15f, 5f, -15f), Vector3f(0f,0.0f,40.0f))
-    val pointLight4 = PointLight(Vector3f(15f, 5f, 15f), Vector3f(30.0f,0.0f,0.0f))
+    val pointLight2 = PointLight(Vector3f(-15f, 5f, -15f), Vector3f(20.0f,0.0f,20.0f))
+    val pointLight3 = PointLight(Vector3f(15f, 5f, -15f), Vector3f(0f,0.0f,20.0f))
+    val pointLight4 = PointLight(Vector3f(15f, 5f, 15f), Vector3f(20.0f,0.0f,0.0f))
     val spotLight = SpotLight(Vector3f(0f,2f,0f),Vector3f(2f,2f,2f),Math.toRadians(20f),org.joml.Math.toRadians(30f))
 
     //scene setup
@@ -80,7 +80,7 @@ class Scene(private val window: GameWindow) {
 
         camera = TronCamera()
         camera.rotate(-0.610865f,0f,0f)
-        camera.translate(Vector3f(0.0f, 0.0f, 4.0f))
+        camera.translate(Vector3f(0.0f, 0.0f, 14.0f))
 
 
 
@@ -159,7 +159,7 @@ class Scene(private val window: GameWindow) {
 
 
         groundMesh = Mesh(objMesh.vertexData, objMesh.indexData, vertexAttributes, floorMaterial)
-        motorrad= ModelLoader.loadModel("assets/Light Cycle/Light Cycle/HQ_Movie cycle.obj", -1.5708f, 1.5708f, 0f)!!
+        motorrad= ModelLoader.loadModel("assets/Light Cycle/x-wing-flyingv1.obj", 0f, 3.14159f, 0f)!!
 
 
 
@@ -179,7 +179,7 @@ class Scene(private val window: GameWindow) {
 
         spotLight.rotate(Math.toRadians(-5f),0f,0f)
         spotLight.parent = motorrad
-
+        //pointLight.parent=motorrad
 
     }
 
@@ -212,7 +212,7 @@ class Scene(private val window: GameWindow) {
 
         spotLight.bind(staticShader, camera.getCalculateViewMatrix())
 
-        motorrad.render(staticShader, Vector3f(1f,0f,1f))
+        motorrad.render(staticShader, Vector3f(0f,0f,0f))
         renderable.render(staticShader,Vector3f(0f,1f,0f))
 
 
