@@ -106,6 +106,7 @@ out struct VertexData
 } vertexData;
 
 void main(){
+    vertexData.color=normal;
    vec4 viewpos = view_matrix * model_matrix * vec4(position, 1.0);
     vertexData.viewDir = -viewpos.xyz;
     gl_Position = proj_matrix * viewpos ;

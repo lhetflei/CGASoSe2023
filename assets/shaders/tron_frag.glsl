@@ -31,6 +31,7 @@ uniform sampler2D material_specular;
 uniform float shininess;
 uniform vec3 emit_col;
 uniform float gammaValue;
+uniform float shader;
 
 out vec4 color;
 
@@ -61,6 +62,8 @@ vec3 brdf(vec3 n, vec3 l, vec3 v, vec3 ms, vec3 md, float k,float attenuation)
 
 void main()
 {
+
+if (shader>=0&&shader<=1){
     vec3 viewDir = normalize(vertexData.viewDir);
     vec3 normal = normalize(vertexData.normal);
     //vec3 lightDirpoint = normalize(vertexData.lightDirpoint);
@@ -109,6 +112,36 @@ void main()
     color.xyz = invgamma(color.xyz, gammaValue);
 
     color.a = 1.0;
+}
+if(shader>1&&shader<=2)
+{
+    float intensity;
+
+
+
+        intensity = dot(vertexData.lightDirpoint[0], vertexData.normal);
+
+
+        if (intensity > 0.95)
+        color = vec4(1.0, 0.5, 0.5, 1.0);
+        else if (intensity > 0.5)
+        color = vec4(0.6, 0.3, 0.3, 1.0);
+        else if (intensity > 0.25)
+        color = vec4(0.4, 0.2, 0.2, 1.0);
+        else
+        color = vec4(0.2, 0.1, 0.1, 1.0);
+
+
+
+}
+    if(shader>2&&shader<=3)
+    {
+        vec3 normalized_normal = normalize(vertexData.color);
+        float intensityx = abs(normalized_normal.x);
+        float intensityy = abs(normalized_normal.y);
+        float intensityz = abs(normalized_normal.z);
+        color = vec4(vertexData.color.x, vertexData.color.y, vertexData.color.z, 1.0);
+    }
 }
 
 

@@ -44,6 +44,7 @@ class Scene(private val window: GameWindow) {
     private val sphereMatrix = Matrix4f()
     private val groundMatrix = Matrix4f()
 
+    var tempshader=1f
     var meshlist = mutableListOf<Mesh>()
     var renderable = Renderable(meshlist)
     var renderable2 = Renderable(meshlist)
@@ -249,6 +250,12 @@ class Scene(private val window: GameWindow) {
         }
         if (window.getKeyState(GLFW_KEY_A) == true) {
             motorrad.rotate(0f, 0.03f, 0.0f)
+        }
+        if (window.getKeyState(GLFW_KEY_L) == true) {
+            tempshader=tempshader+0.1f
+            if(tempshader>=3f){
+                tempshader=0f}
+            staticShader.setUniform("shader",tempshader)
         }
     }
     fun onKey(key: Int, scancode: Int, action: Int, mode: Int) {}
