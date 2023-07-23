@@ -43,7 +43,7 @@ class Scene(private val window: GameWindow) {
 
     private val sphereMatrix = Matrix4f()
     private val groundMatrix = Matrix4f()
-
+    var camselect=0f
     var tempshader=1f
     var meshlist = mutableListOf<Mesh>()
     var renderable = Renderable(meshlist)
@@ -262,6 +262,15 @@ class Scene(private val window: GameWindow) {
             if(tempshader>=3f){
                 tempshader=0f}
             staticShader.setUniform("shader",tempshader)
+        }
+        if (window.getKeyState(GLFW_KEY_C)==true&&camera.getPosition().z<=50){
+            camera.translate(Vector3f(0.0f, 0.0f, 0.5f))
+
+        }
+        if (window.getKeyState(GLFW_KEY_V)==true&&camera.getPosition().z>=0){
+            println(camera.getPosition().z)
+            camera.translate(Vector3f(0.0f, 0.0f, -0.5f))
+
         }
     }
     fun onKey(key: Int, scancode: Int, action: Int, mode: Int) {}
