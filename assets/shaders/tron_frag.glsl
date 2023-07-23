@@ -104,8 +104,9 @@ if (shader>=0&&shader<=1){
     float theta = dot(-lightDirspot, lightDirection);
     float gamma = spotLight.outerConeAngle;
     float phi = spotLight.innerConeAngle;
+
     float intensity = clamp((theta - gamma) / (phi - gamma), 0.0, 1.0);
-    color.xyz += brdf(normal, lightDirspot, viewDir, linearSpecularCol, linearDiffuseCol, shininess,1) * spotLight.lightColor * intensity;
+    color.xyz += brdf(normal, lightDirspot, viewDir, linearSpecularCol, linearDiffuseCol, shininess,1.0/(length(vertexData.lightDirspot)*length(vertexData.lightDirspot))) * spotLight.lightColor * intensity;
 
     // Inverse Gammakorrektur, um das Ergebnis in sRGB oder Gamma zu konvertieren
 

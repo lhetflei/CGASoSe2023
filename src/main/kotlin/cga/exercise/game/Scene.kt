@@ -48,19 +48,20 @@ class Scene(private val window: GameWindow) {
     var meshlist = mutableListOf<Mesh>()
     var renderable = Renderable(meshlist)
     var renderable2 = Renderable(meshlist)
+    var renderable3 = Renderable(meshlist)
     var motorrad = Renderable(meshlist)
 
     val desiredGammaValue = 2.2f // Beispielwert für den gewünschten Gammawert
 
-    val lightPosition = Vector3f(-15f, 5f, 15f) // Anpassen der Lichtposition
-    val lightColor = Vector3f(30f, 30f, 30f) // Anpassen der Lichtfarbe (hier: Weiß)
+    val lightPosition = Vector3f(-15f, 30f, 15f) // Anpassen der Lichtposition
+    val lightColor = Vector3f(20f, 20f, 20f) // Anpassen der Lichtfarbe (hier: Weiß)
 
     val pointLight = PointLight(lightPosition, lightColor)
 
     val pointLight2 = PointLight(Vector3f(-15f, 5f, -15f), Vector3f(30.0f,0.0f,30.0f))
     val pointLight3 = PointLight(Vector3f(15f, 5f, -15f), Vector3f(0f,0.0f,40.0f))
     val pointLight4 = PointLight(Vector3f(15f, 5f, 15f), Vector3f(30.0f,0.0f,0.0f))
-    val spotLight = SpotLight(Vector3f(0f,2f,0f),Vector3f(2f,2f,2f),Math.toRadians(20f),org.joml.Math.toRadians(30f))
+    val spotLight = SpotLight(Vector3f(0f,2f,0f),Vector3f(50f,50f,50f),Math.toRadians(10f),org.joml.Math.toRadians(30f))
 
     //scene setup
     init {
@@ -81,7 +82,7 @@ class Scene(private val window: GameWindow) {
 
         camera = TronCamera()
         camera.rotate(-0.610865f,0f,0f)
-        camera.translate(Vector3f(0.0f, 0.0f, 4.0f))
+        camera.translate(Vector3f(0.0f, 0.0f, 40.0f))
 
 
 
@@ -172,8 +173,12 @@ class Scene(private val window: GameWindow) {
 
 
 
-
-        renderable2 = motorrad
+        renderable3 = ModelLoader.loadModel("assets/Moon_3D_Model/moon.obj", -1.5708f, 1.5708f, 0f)!!
+        renderable2 = ModelLoader.loadModel("assets/10464_Asteroid_L3.123c72035d71-abea-4a34-9131-5e9eeeffadcb/10464_Asteroid_v1_Iterations-2.obj", -1.5708f, 1.5708f, 0f)!!
+        renderable2.scale(Vector3f(0.005f,0.005f,0.005f))
+        renderable2.translate(Vector3f(500f,20f,0f))
+        renderable3.scale(Vector3f(0.05f,0.05f,0.05f))
+        renderable3.translate(Vector3f(-500f,20f,0f))
         renderable = Renderable(mutableListOf<Mesh>(groundMesh))
         renderable.scale(Vector3f(25.7f, 25.7f, 25.7f))
         camera.parent = motorrad
@@ -215,7 +220,8 @@ class Scene(private val window: GameWindow) {
 
         motorrad.render(staticShader, Vector3f(1f,0f,1f))
         renderable.render(staticShader,Vector3f(0f,1f,0f))
-
+        renderable2.render(staticShader, Vector3f(0.5f,0.5f,0.5f))
+        renderable3.render(staticShader, Vector3f(0.5f,0.5f,0.5f))
 
         //renderable2.render(staticShader)
 
