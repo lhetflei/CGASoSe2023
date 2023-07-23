@@ -116,12 +116,17 @@ if (shader>=0&&shader<=1){
 }
 if(shader>1&&shader<=2)
 {
-    float intensity;
 
+    //float intensity;
+    vec4 ambientCol = vec4(0.04, 0.04, 0.04,1.0);
+    float intensity = dot(vertexData.lightDirpoint[0], vertexData.normal);
+    vec3 lightDirspot = normalize(vertexData.lightDirspot);
+    vec3 lightDirection = normalize(spotLight.direction);
+    float theta = dot(-lightDirspot, lightDirection);
+    float gamma = spotLight.outerConeAngle;
+    float phi = spotLight.innerConeAngle;
 
-
-        intensity = dot(vertexData.lightDirpoint[0], vertexData.normal);
-
+   intensity = clamp((theta - gamma) / (phi - gamma), 0.0, 1.0);
 
         if (intensity > 0.95)
         color = vec4(1.0, 0.5, 0.5, 1.0);
@@ -132,7 +137,7 @@ if(shader>1&&shader<=2)
         else
         color = vec4(0.2, 0.1, 0.1, 1.0);
 
-
+        color+=ambientCol;
 
 }
     if(shader>2&&shader<=3)

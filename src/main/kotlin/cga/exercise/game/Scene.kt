@@ -82,7 +82,7 @@ class Scene(private val window: GameWindow) {
 
         camera = TronCamera()
         camera.rotate(-0.610865f,0f,0f)
-        camera.translate(Vector3f(0.0f, 0.0f, 40.0f))
+        camera.translate(Vector3f(0.0f, 0.0f, 14.0f))
 
 
 
@@ -221,7 +221,7 @@ class Scene(private val window: GameWindow) {
         motorrad.render(staticShader, Vector3f(1f,0f,1f))
         renderable.render(staticShader,Vector3f(0f,1f,0f))
         renderable2.render(staticShader, Vector3f(0.5f,0.5f,0.5f))
-        renderable3.render(staticShader, Vector3f(0.5f,0.5f,0.5f))
+        renderable3.render(staticShader, Vector3f(0.1f,0.1f,0.1f))
 
         //renderable2.render(staticShader)
 
