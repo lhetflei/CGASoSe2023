@@ -50,12 +50,12 @@ class Scene(private val window: GameWindow) {
 
     val desiredGammaValue = 2.2f // Beispielwert für den gewünschten Gammawert
 
-    val lightPosition = Vector3f(15f, 10f, 0f) // Anpassen der Lichtposition
+    val lightPosition = Vector3f(-15f, 5f, 0f) // Anpassen der Lichtposition
     val lightColor = Vector3f(20f, 20f, 20f) // Anpassen der Lichtfarbe (hier: Weiß)
 
     val pointLight = PointLight(lightPosition, lightColor)
 
-    val pointLight2 = PointLight(Vector3f(-15f, 5f, -15f), Vector3f(3.0f,0.0f,3.0f))
+    val pointLight2 = PointLight(Vector3f(-15f, 5f, -15f), Vector3f(30.0f,0.0f,30.0f))
     val pointLight3 = PointLight(Vector3f(15f, 5f, -15f), Vector3f(0f,0.0f,40.0f))
     val pointLight4 = PointLight(Vector3f(15f, 5f, 15f), Vector3f(30.0f,0.0f,0.0f))
     val spotLight = SpotLight(Vector3f(0f,2f,0f),Vector3f(50f,50f,50f),Math.toRadians(10f),org.joml.Math.toRadians(30f))
@@ -208,9 +208,9 @@ class Scene(private val window: GameWindow) {
         camera.updateProjectionMatrix()
         camera.bind(staticShader)
 
-        pointLight2.bind(staticShader,camera.getCalculateViewMatrix(),0)
-        pointLight.bind(staticShader,camera.getCalculateViewMatrix(),1)
-        pointLight3.bind(staticShader,camera.getCalculateViewMatrix(),2)
+        pointLight2.bind(staticShader,camera.getCalculateViewMatrix(),2)
+        pointLight.bind(staticShader,camera.getCalculateViewMatrix(),0)
+        pointLight3.bind(staticShader,camera.getCalculateViewMatrix(),1)
         pointLight4.bind(staticShader,camera.getCalculateViewMatrix(),3)
 
         spotLight.bind(staticShader, camera.getCalculateViewMatrix())

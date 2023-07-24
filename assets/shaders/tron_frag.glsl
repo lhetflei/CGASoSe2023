@@ -119,6 +119,7 @@ if(shader>1&&shader<=2)
     float intensity=0f;
     //float intensity;
     vec4 ambientCol = vec4(0.04, 0.04, 0.04,1.0);
+    color=ambientCol;
     vec4 emissiveCol = texture(material_emissive, vertexData.tc)*vec4(emit_col,1.0);
     vec3 normal = normalize(vertexData.normal);
     vec3 lightDirspot = normalize(vertexData.lightDirspot);
@@ -126,23 +127,38 @@ if(shader>1&&shader<=2)
     float theta = dot(-lightDirspot, lightDirection);
     float gamma = spotLight.outerConeAngle;
     float phi = spotLight.innerConeAngle;
-    float distance = length(vertexData.lightDirpoint[0]);
-    float attenuation = 10.0 / (distance * distance);  // attenuation
-    intensity += dot(vertexData.lightDirpoint[0], normal);
 
-    intensity *=attenuation;
-    intensity += clamp((theta - gamma) / (phi - gamma), 0.0, 1.0);
+    for (int i = 0; i < 4; i++) {
+        float distance = length(vertexData.lightDirpoint[i]);
+        float attenuation = 100.0 / (distance * distance);// attenuation
+        intensity += dot(normalize(vertexData.lightDirpoint[i]), normal);
+        intensity *=attenuation;
 
-        if (intensity > 0.95)
-        color = vec4(1.0, 0.5, 0.5, 1.0);
-        else if (intensity > 0.40)
-        color = vec4(0.6, 0.3, 0.3, 1.0);
+        if (intensity > 0.5)
+        color += vec4(1.0, 0.5, 0.5, 1.0);
         else if (intensity > 0.1)
-        color = vec4(0.4, 0.2, 0.2, 1.0);
+        color += vec4(0.6, 0.3, 0.3, 1.0);
+        else if (intensity > 0.05)
+        color += vec4(0.4, 0.2, 0.2, 1.0);
         else
-        color = vec4(0.2, 0.1, 0.1, 1.0);
+        color += vec4(0.2, 0.1, 0.1, 1.0);
+    }
+    intensity += clamp((theta - gamma) / (phi - gamma), 0.0, 1.0);
+    if (intensity > 0.5)
+    color = vec4(1.0, 0.5, 0.5, 1.0);
+    else if (intensity > 0.1)
+    color = vec4(0.6, 0.3, 0.3, 1.0);
+    else if (intensity > 0.05)
+    color = vec4(0.4, 0.2, 0.2, 1.0);
+    else
+    color = vec4(0.2, 0.1, 0.1, 1.0);
 
-        color+=ambientCol;
+
+
+
+
+
+
 
 }
     if(shader>2&&shader<=3)
