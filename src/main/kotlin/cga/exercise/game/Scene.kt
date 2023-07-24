@@ -13,9 +13,6 @@ import cga.framework.GLError
 import cga.framework.GameWindow
 import cga.framework.ModelLoader
 import cga.framework.OBJLoader.loadOBJ
-import org.joml.Matrix4f
-import org.joml.Vector2f
-import org.joml.Vector3f
 import org.lwjgl.BufferUtils
 import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.opengl.EXTTextureFilterAnisotropic
@@ -26,8 +23,8 @@ import org.lwjgl.opengl.GL30.*
 import org.lwjgl.stb.STBImage
 import java.nio.ByteBuffer
 import cga.framework.ModelLoader.loadModel
+import org.joml.*
 import kotlin.math.cos
-import org.joml.Math
 
 
 /**
@@ -53,12 +50,12 @@ class Scene(private val window: GameWindow) {
 
     val desiredGammaValue = 2.2f // Beispielwert für den gewünschten Gammawert
 
-    val lightPosition = Vector3f(-15f, 30f, 15f) // Anpassen der Lichtposition
+    val lightPosition = Vector3f(15f, 10f, 0f) // Anpassen der Lichtposition
     val lightColor = Vector3f(20f, 20f, 20f) // Anpassen der Lichtfarbe (hier: Weiß)
 
     val pointLight = PointLight(lightPosition, lightColor)
 
-    val pointLight2 = PointLight(Vector3f(-15f, 5f, -15f), Vector3f(30.0f,0.0f,30.0f))
+    val pointLight2 = PointLight(Vector3f(-15f, 5f, -15f), Vector3f(3.0f,0.0f,3.0f))
     val pointLight3 = PointLight(Vector3f(15f, 5f, -15f), Vector3f(0f,0.0f,40.0f))
     val pointLight4 = PointLight(Vector3f(15f, 5f, 15f), Vector3f(30.0f,0.0f,0.0f))
     val spotLight = SpotLight(Vector3f(0f,2f,0f),Vector3f(50f,50f,50f),Math.toRadians(10f),org.joml.Math.toRadians(30f))
@@ -135,7 +132,7 @@ class Scene(private val window: GameWindow) {
 
 
 
-        val spec = Texture2D("assets/textures/ground_spec.png", true)
+        val spec = Texture2D("assets/textures/ground_diff.png", true)
         val ground = Texture2D("assets/textures/ground_emit.png", true)
         val diff =Texture2D("assets/textures/ground_diff.png", true)
 
@@ -245,6 +242,8 @@ class Scene(private val window: GameWindow) {
 
         if (window.getKeyState(GLFW_KEY_W) == true) {
             val forward = Vector3f(0f, 0f, -0.1f)
+
+
             motorrad.translate(forward)
         }
         if (window.getKeyState(GLFW_KEY_D) == true) {
@@ -271,8 +270,10 @@ class Scene(private val window: GameWindow) {
 
     fun onMouseMove(xpos: Double, ypos: Double) {
         val x_speed = (xpos - window.windowWidth/ 2.0).toFloat() * 0.002f
-        glfwSetCursorPos(window.m_window, window.windowWidth / 2.0, window.windowHeight/ 2.0)
 
+        val y_speed = (ypos - window.windowHeight/ 2.0).toFloat() * 0.002f
+
+        glfwSetCursorPos(window.m_window, window.windowWidth / 2.0, window.windowHeight/ 2.0)
         camera.rotateAroundPoint(0f, -x_speed, 0f, renderable.getWorldPosition())
 
     }
