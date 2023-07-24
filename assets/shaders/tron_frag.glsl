@@ -131,24 +131,23 @@ if(shader>1&&shader<=2)
     for (int i = 0; i < 4; i++) {
         float distance = length(vertexData.lightDirpoint[i]);
         float attenuation = 100.0 / (distance * distance);// attenuation
-        intensity += dot(normalize(vertexData.lightDirpoint[i]), normal);
-        intensity *=attenuation;
+        intensity += dot(normalize(vertexData.lightDirpoint[i]), normal)*attenuation;
 
-        if (intensity > 0.5)
+        if (intensity > 0.55)
         color += vec4(1.0, 0.5, 0.5, 1.0);
-        else if (intensity > 0.1)
+        else if (intensity > 0.25)
         color += vec4(0.6, 0.3, 0.3, 1.0);
-        else if (intensity > 0.05)
+        else if (intensity > 0.15)
         color += vec4(0.4, 0.2, 0.2, 1.0);
         else
         color += vec4(0.2, 0.1, 0.1, 1.0);
     }
     intensity += clamp((theta - gamma) / (phi - gamma), 0.0, 1.0);
-    if (intensity > 0.5)
+    if (intensity > 0.55)
     color = vec4(1.0, 0.5, 0.5, 1.0);
-    else if (intensity > 0.1)
+    else if (intensity > 0.25)
     color = vec4(0.6, 0.3, 0.3, 1.0);
-    else if (intensity > 0.05)
+    else if (intensity > 0.15)
     color = vec4(0.4, 0.2, 0.2, 1.0);
     else
     color = vec4(0.2, 0.1, 0.1, 1.0);

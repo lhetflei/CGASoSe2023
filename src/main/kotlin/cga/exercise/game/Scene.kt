@@ -50,7 +50,7 @@ class Scene(private val window: GameWindow) {
 
     val desiredGammaValue = 2.2f // Beispielwert für den gewünschten Gammawert
 
-    val lightPosition = Vector3f(-15f, 5f, 0f) // Anpassen der Lichtposition
+    val lightPosition = Vector3f(-15f, 5f, 15f) // Anpassen der Lichtposition
     val lightColor = Vector3f(20f, 20f, 20f) // Anpassen der Lichtfarbe (hier: Weiß)
 
     val pointLight = PointLight(lightPosition, lightColor)
