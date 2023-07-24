@@ -263,14 +263,8 @@ class Scene(private val window: GameWindow) {
                 tempshader=0f}
             staticShader.setUniform("shader",tempshader)
         }
-        if (window.getKeyState(GLFW_KEY_C)==true&&camera.getPosition().z<=50){
-            camera.translate(Vector3f(0.0f, 0.0f, 0.5f))
-
-        }
-        if (window.getKeyState(GLFW_KEY_V)==true&&camera.getPosition().z>=0){
-            println(camera.getPosition().z)
-            camera.translate(Vector3f(0.0f, 0.0f, -0.5f))
-
+        if (window.getKeyState(GLFW_KEY_ESCAPE) == true) {
+            //pause
         }
     }
     fun onKey(key: Int, scancode: Int, action: Int, mode: Int) {}
@@ -282,6 +276,19 @@ class Scene(private val window: GameWindow) {
         camera.rotateAroundPoint(0f, -x_speed, 0f, renderable.getWorldPosition())
 
     }
+
+    fun onMouseScroll(xoffset: Double, yoffset: Double) {
+        if (yoffset < 0)
+        {
+            camera.translate(Vector3f(0.0f, 0.0f, 0.5f))
+        }
+        if (yoffset > 0)
+        {
+            camera.translate(Vector3f(0.0f, 0.0f, -0.5f))
+        }
+    }
+
+
 
     fun cleanup() {
         //simpleMesh.cleanup()
