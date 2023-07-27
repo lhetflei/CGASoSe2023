@@ -1,3 +1,3 @@
 # CGASoSe2023
-C+V Camera Steuerung
+MouseWheel Camera Steuerung
 L Shader wechsel
