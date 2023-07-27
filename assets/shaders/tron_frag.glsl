@@ -142,7 +142,7 @@ if(shader>1&&shader<=2)
         else
         color += vec4(0.2, 0.1, 0.1, 1.0);
     }
-    intensity += clamp((theta - gamma) / (phi - gamma), 0.0, 1.0);
+    intensity += clamp((theta - gamma) / (phi - gamma), 0.0, 1.0)*100.0/(length(vertexData.lightDirspot)*length(vertexData.lightDirspot));
     if (intensity > 0.55)
     color = vec4(1.0, 0.5, 0.5, 1.0);
     else if (intensity > 0.25)

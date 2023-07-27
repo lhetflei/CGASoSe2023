@@ -24,6 +24,7 @@ import org.lwjgl.stb.STBImage
 import java.nio.ByteBuffer
 import cga.framework.ModelLoader.loadModel
 import org.joml.*
+import java.util.Random
 import kotlin.math.cos
 
 
@@ -42,6 +43,7 @@ class Scene(private val window: GameWindow) {
     private val groundMatrix = Matrix4f()
     var camselect=0f
     var tempshader=1f
+    var asteroidlist = mutableListOf<Renderable>()
     var meshlist = mutableListOf<Mesh>()
     var renderable = Renderable(meshlist)
     var renderable2 = Renderable(meshlist)
@@ -183,6 +185,13 @@ class Scene(private val window: GameWindow) {
         spotLight.rotate(Math.toRadians(-5f),0f,0f)
         spotLight.parent = motorrad
 
+        for(i in 1..25)//random asteroid spawn
+        {
+            var rendertemp = ModelLoader.loadModel("assets/10464_Asteroid_L3.123c72035d71-abea-4a34-9131-5e9eeeffadcb/10464_Asteroid_v1_Iterations-2.obj", -1.5708f, 1.5708f, 0f)!!
+            rendertemp.scale(Vector3f(0.005f,0.005f,0.005f))
+            rendertemp.translate(Vector3f(Random().nextFloat(-10000f,10000f),Random().nextFloat(-10000f,10000f),Random().nextFloat(-10000f,10000f)))
+            asteroidlist.add(rendertemp)
+        }
 
     }
 
@@ -219,7 +228,10 @@ class Scene(private val window: GameWindow) {
         renderable.render(staticShader,Vector3f(0f,1f,0f))
         renderable2.render(staticShader, Vector3f(0.5f,0.5f,0.5f))
         renderable3.render(staticShader, Vector3f(0.1f,0.1f,0.1f))
-
+        for(i in 0..asteroidlist.lastIndex-1)
+        {
+            asteroidlist[i].render(staticShader,Vector3f(0.5f,0.5f,0.5f))
+        }
         //renderable2.render(staticShader)
 
 
