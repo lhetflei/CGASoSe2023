@@ -38,7 +38,8 @@ class Scene(private val window: GameWindow) {
     //private val simpleMesh: Mesh
     //private val sphereMesh: Mesh
     private val groundMesh: Mesh
-
+    var rayl=0
+    var shoot =false
     private val sphereMatrix = Matrix4f()
     private val groundMatrix = Matrix4f()
     var camselect=0f
@@ -49,6 +50,7 @@ class Scene(private val window: GameWindow) {
     var renderable2 = Renderable(meshlist)
     var renderable3 = Renderable(meshlist)
     var motorrad = Renderable(meshlist)
+    var ray = Renderable(meshlist)
 
     val desiredGammaValue = 2.2f // Beispielwert für den gewünschten Gammawert
 
@@ -59,7 +61,7 @@ class Scene(private val window: GameWindow) {
 
     val pointLight2 = PointLight(Vector3f(-15f, 5f, -15f), Vector3f(30.0f,0.0f,30.0f))
     val pointLight3 = PointLight(Vector3f(15f, 5f, -15f), Vector3f(0f,0.0f,40.0f))
-    val pointLight4 = PointLight(Vector3f(15f, 5f, 15f), Vector3f(30.0f,0.0f,0.0f))
+    val pointLight4 = PointLight(Vector3f(0f, 1f, 0f), Vector3f(30.0f,0.0f,0.0f))
     val spotLight = SpotLight(Vector3f(0f,2f,0f),Vector3f(50f,50f,50f),Math.toRadians(10f),org.joml.Math.toRadians(30f))
 
     //scene setup
@@ -155,6 +157,14 @@ class Scene(private val window: GameWindow) {
                 60.0f,
                 Vector2f(64.0f, 64.0f)
         )
+        val rayMaterial = Material(
+
+            diff,
+            emit = Texture2D("assets/textures/ground_emit.png", true),
+            spec,
+            60.0f,
+            Vector2f(64.0f, 64.0f)
+        )
         floorMaterial.bind(staticShader)
 
 
@@ -182,8 +192,17 @@ class Scene(private val window: GameWindow) {
         renderable.scale(Vector3f(25.7f, 25.7f, 25.7f))
         camera.parent = motorrad
 
+        var ras = loadOBJ("assets/models/newscene.obj",true,true)
+        var raymesh = Mesh(ras.objects[0].meshes[0].vertexData,ras.objects[0].meshes[0].indexData,vertexAttributes,rayMaterial)
+        ray = Renderable(mutableListOf(raymesh))
+        ray.translate(spotLight.getPosition())
+        ray.translate(Vector3f(0f,-1f,0f))
+        ray.rotate(-1.5708f,1.5708f,0f)
+        //ray.scale(Vector3f(1.1f,2.1f,2.1f))
         spotLight.rotate(Math.toRadians(-5f),0f,0f)
         spotLight.parent = motorrad
+        ray.parent = motorrad
+        pointLight4.parent=ray
 
         for(i in 1..25)//random asteroid spawn
         {
@@ -226,8 +245,24 @@ class Scene(private val window: GameWindow) {
 
         motorrad.render(staticShader, Vector3f(1f,0f,1f))
         renderable.render(staticShader,Vector3f(0f,1f,0f))
-        renderable2.render(staticShader, Vector3f(0.5f,0.5f,0.5f))
+        //renderable2.render(staticShader, Vector3f(0.5f,0.5f,0.5f))
         renderable3.render(staticShader, Vector3f(0.1f,0.1f,0.1f))
+
+        if(shoot==true){
+            ray.render(staticShader,Vector3f(10f,0.1f,0.1f))
+            ray.translate(Vector3f(0f,1f,0f))
+            rayl++
+            println(rayl)
+            if(rayl>=200){
+                ray.translate(Vector3f(0f,-200f,0f))
+                shoot= false
+                rayl=0
+            }
+        }
+
+
+
+
         for(i in 0..asteroidlist.lastIndex-1)
         {
             asteroidlist[i].render(staticShader,Vector3f(0.5f,0.5f,0.5f))
@@ -276,6 +311,9 @@ class Scene(private val window: GameWindow) {
         }
         if (window.getKeyState(GLFW_KEY_ESCAPE) == true) {
             //pause
+        }
+        if (window.getKeyState(GLFW_KEY_P) == true) {
+            shoot=true
         }
     }
     fun onKey(key: Int, scancode: Int, action: Int, mode: Int) {}
