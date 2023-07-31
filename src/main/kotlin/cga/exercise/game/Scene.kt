@@ -207,8 +207,11 @@ class Scene(private val window: GameWindow) {
         for(i in 1..25)//random asteroid spawn
         {
             var rendertemp = ModelLoader.loadModel("assets/10464_Asteroid_L3.123c72035d71-abea-4a34-9131-5e9eeeffadcb/10464_Asteroid_v1_Iterations-2.obj", -1.5708f, 1.5708f, 0f)!!
-            rendertemp.scale(Vector3f(0.005f,0.005f,0.005f))
+            var ascale=Random().nextFloat(0.005f,0.02f)
+
+            rendertemp.scale(Vector3f(ascale,ascale,ascale))
             rendertemp.translate(Vector3f(Random().nextFloat(-10000f,10000f),Random().nextFloat(-10000f,10000f),Random().nextFloat(-10000f,10000f)))
+            rendertemp.rotate(Math.toRadians(Random().nextFloat(0f,360f)),Math.toRadians(Random().nextFloat(0f,360f)),Math.toRadians(Random().nextFloat(0f,360f)) )
             asteroidlist.add(rendertemp)
         }
 
@@ -239,7 +242,7 @@ class Scene(private val window: GameWindow) {
         pointLight2.bind(staticShader,camera.getCalculateViewMatrix(),2)
         pointLight.bind(staticShader,camera.getCalculateViewMatrix(),0)
         pointLight3.bind(staticShader,camera.getCalculateViewMatrix(),1)
-        pointLight4.bind(staticShader,camera.getCalculateViewMatrix(),3)
+
 
         spotLight.bind(staticShader, camera.getCalculateViewMatrix())
 
@@ -250,13 +253,16 @@ class Scene(private val window: GameWindow) {
 
         if(shoot==true){
             ray.render(staticShader,Vector3f(10f,0.1f,0.1f))
-            ray.translate(Vector3f(0f,1f,0f))
+            pointLight4.bind(staticShader,camera.getCalculateViewMatrix(),3)
+            ray.translate(Vector3f(0f,3f,0f))
             rayl++
             println(rayl)
-            if(rayl>=200){
-                ray.translate(Vector3f(0f,-200f,0f))
+
+            if(rayl>=100){
+                ray.translate(Vector3f(0f,-300f,0f))
                 shoot= false
                 rayl=0
+
             }
         }
 
