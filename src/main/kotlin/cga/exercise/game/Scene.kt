@@ -39,6 +39,7 @@ class Scene(private val window: GameWindow) {
     //private val sphereMesh: Mesh
     private val groundMesh: Mesh
     var rayl=0
+    var speed = -0.1f
     var shoot =false
     private val sphereMatrix = Matrix4f()
     private val groundMatrix = Matrix4f()
@@ -275,7 +276,13 @@ class Scene(private val window: GameWindow) {
         for(i in 0..asteroidlist.lastIndex-1)
         {
             asteroidlist[i].render(staticShader,Vector3f(0.4f,0.4f,0.4f))
+            if(Random().nextBoolean()==true)
+            asteroidlist[i].translate(Vector3f(Random().nextFloat(0f,1f),Random().nextFloat(0f,1f),Random().nextFloat(0f,1f)))
+            //else
+             //   asteroidlist[i].translate(Vector3f(Random().nextFloat(-10f,0f),Random().nextFloat(-10f,0f),Random().nextFloat(-10f,0f)))
         }
+
+
         //renderable2.render(staticShader)
 
 
@@ -297,7 +304,7 @@ class Scene(private val window: GameWindow) {
     fun update(dt: Float, t: Float) {
 
         if (window.getKeyState(GLFW_KEY_W) == true) {
-            val forward = Vector3f(0f, 0f, -0.1f)
+            val forward = Vector3f(0f, 0f, speed)
 
 
             motorrad.translate(forward)
@@ -323,6 +330,17 @@ class Scene(private val window: GameWindow) {
         }
         if (window.getKeyState(GLFW_KEY_P) == true) {
             shoot=true
+        }
+        if (window.getKeyState(GLFW_KEY_LEFT_SHIFT) == true) {
+            println(speed)
+            if(speed>=-0.5f)
+            speed-=0.003f
+
+        }
+        if (window.getKeyState(GLFW_KEY_LEFT_SHIFT) == false) {
+            println(speed)
+            if(speed<=-0.1f)
+                speed+=0.01f
         }
     }
     fun onKey(key: Int, scancode: Int, action: Int, mode: Int) {}
