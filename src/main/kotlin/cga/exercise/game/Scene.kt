@@ -249,7 +249,7 @@ class Scene(private val window: GameWindow) {
 
         spotLight.bind(staticShader, camera.getCalculateViewMatrix())
 
-        motorrad.render(staticShader, Vector3f(0.2f,0.2f,0.2f))
+        motorrad.render(staticShader, Vector3f(1.2f,1.2f,1.2f))
         renderable.render(staticShader,Vector3f(0f,1f,0f))
         //renderable2.render(staticShader, Vector3f(0.5f,0.5f,0.5f))
         renderable3.render(staticShader, Vector3f(0.1f,0.1f,0.1f))
