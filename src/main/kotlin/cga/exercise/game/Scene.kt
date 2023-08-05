@@ -113,7 +113,7 @@ class Scene(private val window: GameWindow) {
 
 
         enableDepthTest(GL_LESS) //Tiefentest, werden Pixel in der richtigen Reihenfolge gerendert
-
+        //enableFaceCulling(GL_CCW, GL_FRONT)
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f); GLError.checkThrow() //schwarze hintergrundfarbe, alpha1.0f völlige deckkraft
         //glClearColor(0.0f, 0.0f, 0.0f, 1.0f); GLError.checkThrow() //schwarz
         //val vertexAttribute = arrayOf<VertexAttribute>(VertexAttribute(3, GL_FLOAT,24,0),VertexAttribute(3, GL_FLOAT,24,12))
@@ -170,11 +170,14 @@ class Scene(private val window: GameWindow) {
 
 
         groundMesh = Mesh(objMesh.vertexData, objMesh.indexData, vertexAttributes, floorMaterial)
-        motorrad= ModelLoader.loadModel("assets/Light Cycle/Light Cycle/HQ_Movie cycle.obj", -1.5708f, 1.5708f, 0f)!!
+        //motorrad= ModelLoader.loadModel("assets/newship/AirShip.obj", 0f, Math.toRadians(180f), 0f)!!
+        //motorrad= ModelLoader.loadModel("assets/ship/scene.obj", 0f, Math.toRadians(180f), 0f)!!
+        //motorrad= ModelLoader.loadModel("assets/xwing/x-wing-flyingv1.obj", 0f, Math.toRadians(180f), 0f)!!
+        motorrad= ModelLoader.loadModel("assets/starsparrow/StarSparrow01.obj", 0f, Math.toRadians(180f), 0f)!!
 
-
-
+        camera.parent = motorrad
         motorrad.scale(Vector3f(0.8f, 0.8f, 0.8f))
+        motorrad.translate(Vector3f(0f,1f,0f))
 
 
 
@@ -190,7 +193,7 @@ class Scene(private val window: GameWindow) {
         renderable3.translate(Vector3f(-500f,20f,0f))
         renderable = Renderable(mutableListOf<Mesh>(groundMesh))
         renderable.scale(Vector3f(25.7f, 25.7f, 25.7f))
-        camera.parent = motorrad
+
 
         var ras = loadOBJ("assets/models/newscene.obj",true,true)
         var raymesh = Mesh(ras.objects[0].meshes[0].vertexData,ras.objects[0].meshes[0].indexData,vertexAttributes,rayMaterial)
@@ -246,7 +249,7 @@ class Scene(private val window: GameWindow) {
 
         spotLight.bind(staticShader, camera.getCalculateViewMatrix())
 
-        motorrad.render(staticShader, Vector3f(1f,0f,1f))
+        motorrad.render(staticShader, Vector3f(0.2f,0.2f,0.2f))
         renderable.render(staticShader,Vector3f(0f,1f,0f))
         //renderable2.render(staticShader, Vector3f(0.5f,0.5f,0.5f))
         renderable3.render(staticShader, Vector3f(0.1f,0.1f,0.1f))
@@ -271,7 +274,7 @@ class Scene(private val window: GameWindow) {
 
         for(i in 0..asteroidlist.lastIndex-1)
         {
-            asteroidlist[i].render(staticShader,Vector3f(0.5f,0.5f,0.5f))
+            asteroidlist[i].render(staticShader,Vector3f(0.4f,0.4f,0.4f))
         }
         //renderable2.render(staticShader)
 
