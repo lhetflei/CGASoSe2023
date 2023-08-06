@@ -6,6 +6,11 @@ import org.joml.Vector3f
 
 class Renderable(private val meshes: MutableList<Mesh>) : Transformable() , IRenderable {
 
+    fun cleanup() {
+        for (mesh in meshes) {
+            mesh.cleanup()
+        }
+    }
     override fun render(shaderProgram: ShaderProgram,emitcol:Vector3f) {
 
         shaderProgram.use()

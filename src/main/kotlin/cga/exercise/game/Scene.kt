@@ -330,6 +330,7 @@ class Scene(private val window: GameWindow) {
         }
         if (window.getKeyState(GLFW_KEY_P) == true) {
             shoot=true
+            checkCollision()
         }
         if (window.getKeyState(GLFW_KEY_LEFT_SHIFT) == true) {
             println(speed)
@@ -341,6 +342,23 @@ class Scene(private val window: GameWindow) {
             println(speed)
             if(speed<=-0.1f)
                 speed+=0.01f
+        }
+    }
+
+    private fun checkCollision() {
+        val shotPosition = ray.getWorldPosition()
+
+        val iterator = asteroidlist.iterator()
+        while (iterator.hasNext()) {
+            val asteroid = iterator.next()
+            val asteroidPosition = asteroid.getWorldPosition()
+
+            val distance = shotPosition.distance(asteroidPosition)
+
+            if (distance < 10.0f) {
+                iterator.remove()
+                asteroid.cleanup()
+            }
         }
     }
     fun onKey(key: Int, scancode: Int, action: Int, mode: Int) {}
@@ -369,7 +387,9 @@ class Scene(private val window: GameWindow) {
 
 
     fun cleanup() {
-        //simpleMesh.cleanup()
+        for (asteroid in asteroidlist) {
+            asteroid.cleanup()
+        }
 
 
     }
