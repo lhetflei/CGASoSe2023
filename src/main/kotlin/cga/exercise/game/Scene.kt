@@ -313,7 +313,7 @@ class Scene(private val window: GameWindow) {
             motorrad.rotate(0f, -0.03f, 0.0f)
         }
         if (window.getKeyState(GLFW_KEY_S) == true) {
-            val backward = Vector3f(0f, 0f, 0.1f)
+            val backward = Vector3f(0f, 0f, 0.2f)
             motorrad.translate(backward)
         }
         if (window.getKeyState(GLFW_KEY_A) == true) {
@@ -369,7 +369,8 @@ class Scene(private val window: GameWindow) {
         val y_speed = (ypos - window.windowHeight/ 2.0).toFloat() * 0.002f
 
         glfwSetCursorPos(window.m_window, window.windowWidth / 2.0, window.windowHeight/ 2.0)
-        camera.rotateAroundPoint(0f, -x_speed, 0f, renderable.getWorldPosition())
+        motorrad.rotate(-y_speed, 0f, 0f)
+        motorrad.rotate(0f, -x_speed, 0f)
 
     }
 
