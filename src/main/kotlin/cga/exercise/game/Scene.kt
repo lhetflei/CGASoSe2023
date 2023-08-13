@@ -38,6 +38,8 @@ class Scene(private val window: GameWindow) {
     //private val simpleMesh: Mesh
     //private val sphereMesh: Mesh
     private val groundMesh: Mesh
+    var score =0f
+    var pause =true
     var rayl=0
     var speed = -0.1f
     var shoot =false
@@ -83,7 +85,7 @@ class Scene(private val window: GameWindow) {
         )
 
         camera = TronCamera()
-        camera.rotate(-0.610865f,0f,0f)
+        camera.rotate(-0.110865f,0f,0f)
         camera.translate(Vector3f(0.0f, 0.0f, 14.0f))
 
 
@@ -225,19 +227,7 @@ class Scene(private val window: GameWindow) {
         glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
         staticShader.use()
 
-/*
-        staticShader.use()
-
-        val viewMatrix = camera.getCalculateViewMatrix()
-        staticShader.setUniform("view_matrix", viewMatrix)
-
-        val projectionMatrix = camera.getCalculateProjectionMatrix()
-        staticShader.setUniform("proj_matrix", projectionMatrix)
-
-        // Normalenmatrix berechnen
-        val normalMatrix = Matrix4f(viewMatrix).invert().transpose()
-        staticShader.setUniform("normalMatrix", normalMatrix)
-*/      staticShader.setUniform("gammaValue", desiredGammaValue)
+        staticShader.setUniform("gammaValue", desiredGammaValue)
 
         camera.updateViewMatrix()
         camera.updateProjectionMatrix()
@@ -278,26 +268,27 @@ class Scene(private val window: GameWindow) {
             asteroidlist[i].render(staticShader,Vector3f(0.4f,0.4f,0.4f))
             if(Random().nextBoolean()==true)
             asteroidlist[i].translate(Vector3f(Random().nextFloat(0f,1f),Random().nextFloat(0f,1f),Random().nextFloat(0f,1f)))
+
             //else
              //   asteroidlist[i].translate(Vector3f(Random().nextFloat(-10f,0f),Random().nextFloat(-10f,0f),Random().nextFloat(-10f,0f)))
         }
 
+        if(pause)
+        {
+            println(score)
+            score+=0.01f
+        }
+        if(score.toInt()%20==0){
+            var rendertemp = ModelLoader.loadModel("assets/10464_Asteroid_L3.123c72035d71-abea-4a34-9131-5e9eeeffadcb/10464_Asteroid_v1_Iterations-2.obj", -1.5708f, 1.5708f, 0f)!!
+            var ascale=Random().nextFloat(0.005f,0.02f)
 
-        //renderable2.render(staticShader)
+            rendertemp.scale(Vector3f(ascale,ascale,ascale))
+            rendertemp.translate(Vector3f(Random().nextFloat(-10000f,10000f),Random().nextFloat(-10000f,10000f),Random().nextFloat(-10000f,10000f)))
+            rendertemp.rotate(Math.toRadians(Random().nextFloat(0f,360f)),Math.toRadians(Random().nextFloat(0f,360f)),Math.toRadians(Random().nextFloat(0f,360f)) )
+            asteroidlist.add(rendertemp)
 
-
-        //sphereMesh.render()
-        //groundMesh.render(staticShader)
-
-
-        //staticShader.use()
-        //staticShader.setUniform("model_matrix", sphereMatrix)
-        //sphereMesh.render()
-        //staticShader.setUniform("model_matrix", renderable2.getModelMatrix())
-        //groundMesh.render()
-
-
-        //simpleMesh.render()
+        }
+    println(asteroidlist.lastIndex.toString())
 
     }
 
@@ -333,13 +324,13 @@ class Scene(private val window: GameWindow) {
             checkCollision()
         }
         if (window.getKeyState(GLFW_KEY_LEFT_SHIFT) == true) {
-            println(speed)
+
             if(speed>=-0.5f)
             speed-=0.003f
 
         }
         if (window.getKeyState(GLFW_KEY_LEFT_SHIFT) == false) {
-            println(speed)
+
             if(speed<=-0.1f)
                 speed+=0.01f
         }
@@ -372,6 +363,10 @@ class Scene(private val window: GameWindow) {
         motorrad.rotate(-y_speed, 0f, 0f)
         motorrad.rotate(0f, -x_speed, 0f)
 
+    }
+    fun onMouseButton(button: Int, action: Int, mode: Int) {
+        shoot=true
+        checkCollision()
     }
 
     fun onMouseScroll(xoffset: Double, yoffset: Double) {
