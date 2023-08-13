@@ -278,7 +278,7 @@ class Scene(private val window: GameWindow) {
             println(score)
             score+=0.01f
         }
-        if(score.toInt()%20==0){
+        /*if(score.toInt()%2000==0){
             var rendertemp = ModelLoader.loadModel("assets/10464_Asteroid_L3.123c72035d71-abea-4a34-9131-5e9eeeffadcb/10464_Asteroid_v1_Iterations-2.obj", -1.5708f, 1.5708f, 0f)!!
             var ascale=Random().nextFloat(0.005f,0.02f)
 
@@ -287,7 +287,7 @@ class Scene(private val window: GameWindow) {
             rendertemp.rotate(Math.toRadians(Random().nextFloat(0f,360f)),Math.toRadians(Random().nextFloat(0f,360f)),Math.toRadians(Random().nextFloat(0f,360f)) )
             asteroidlist.add(rendertemp)
 
-        }
+        }*/
     println(asteroidlist.lastIndex.toString())
 
     }
