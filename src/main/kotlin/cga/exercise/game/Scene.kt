@@ -24,7 +24,11 @@ import org.lwjgl.stb.STBImage
 import java.nio.ByteBuffer
 import cga.framework.ModelLoader.loadModel
 import org.joml.*
+import org.joml.Math.acos
+import org.joml.Math.sqrt
+import java.lang.StrictMath.pow
 import java.util.Random
+import kotlin.math.atan2
 import kotlin.math.cos
 
 
@@ -38,9 +42,12 @@ class Scene(private val window: GameWindow) {
     //private val simpleMesh: Mesh
     //private val sphereMesh: Mesh
     private val groundMesh: Mesh
+    var shoot2=false
+    var cray=0
     var score =0f
     var pause =true
-    var rayl=0
+    var rayl= 0
+    var rayl2=0
     var speed = -0.1f
     var shoot =false
     private val sphereMatrix = Matrix4f()
@@ -48,12 +55,15 @@ class Scene(private val window: GameWindow) {
     var camselect=0f
     var tempshader=1f
     var asteroidlist = mutableListOf<Renderable>()
+    var raylist = mutableListOf<Renderable>()
     var meshlist = mutableListOf<Mesh>()
+    var lightlist = mutableListOf<PointLight>()
     var renderable = Renderable(meshlist)
     var renderable2 = Renderable(meshlist)
     var renderable3 = Renderable(meshlist)
     var motorrad = Renderable(meshlist)
     var ray = Renderable(meshlist)
+    var ray2 = Renderable(meshlist)
 
     val desiredGammaValue = 2.2f // Beispielwert für den gewünschten Gammawert
 
@@ -62,10 +72,11 @@ class Scene(private val window: GameWindow) {
 
     val pointLight = PointLight(lightPosition, lightColor)
 
-    val pointLight2 = PointLight(Vector3f(-15f, 5f, -15f), Vector3f(30.0f,0.0f,30.0f))
+    val pointLight2 = PointLight(Vector3f(0f,1f,0f), Vector3f(30.0f,0.0f,30.0f))
     val pointLight3 = PointLight(Vector3f(15f, 5f, -15f), Vector3f(0f,0.0f,40.0f))
     val pointLight4 = PointLight(Vector3f(0f, 1f, 0f), Vector3f(30.0f,0.0f,0.0f))
-    val spotLight = SpotLight(Vector3f(0f,2f,0f),Vector3f(50f,50f,50f),Math.toRadians(10f),org.joml.Math.toRadians(30f))
+    val spotLight = SpotLight(Vector3f(0f,2f,0f), Vector3f(50f,50f,50f),Math.toRadians(10f),org.joml.Math.toRadians(30f))
+
 
     //scene setup
     init {
@@ -197,18 +208,28 @@ class Scene(private val window: GameWindow) {
         renderable = Renderable(mutableListOf<Mesh>(groundMesh))
         renderable.scale(Vector3f(25.7f, 25.7f, 25.7f))
 
-
         var ras = loadOBJ("assets/models/newscene.obj",true,true)
         var raymesh = Mesh(ras.objects[0].meshes[0].vertexData,ras.objects[0].meshes[0].indexData,vertexAttributes,rayMaterial)
         ray = Renderable(mutableListOf(raymesh))
         ray.translate(spotLight.getPosition())
         ray.translate(Vector3f(0f,-1f,0f))
         ray.rotate(-1.5708f,1.5708f,0f)
+
+        var ras2 = loadOBJ("assets/models/newscene.obj",true,true)
+        var raymesh2 = Mesh(ras.objects[0].meshes[0].vertexData,ras.objects[0].meshes[0].indexData,vertexAttributes,rayMaterial)
+        ray2 = Renderable(mutableListOf(raymesh2))
+        ray2.translate(spotLight.getPosition())
+        ray2.translate(Vector3f(0f,-1f,0f))
+        ray2.rotate(-1.5708f,1.5708f,0f)
+
+
         //ray.scale(Vector3f(1.1f,2.1f,2.1f))
         spotLight.rotate(Math.toRadians(-5f),0f,0f)
         spotLight.parent = motorrad
         ray.parent = motorrad
-        pointLight4.parent=ray
+        ray2.parent=motorrad
+        pointLight4.parent = ray
+        pointLight2.parent = ray2
 
         for(i in 1..25)//random asteroid spawn
         {
@@ -217,7 +238,7 @@ class Scene(private val window: GameWindow) {
 
             rendertemp.scale(Vector3f(ascale,ascale,ascale))
             rendertemp.translate(Vector3f(Random().nextFloat(-10000f,10000f),Random().nextFloat(-10000f,10000f),Random().nextFloat(-10000f,10000f)))
-            rendertemp.rotate(Math.toRadians(Random().nextFloat(0f,360f)),Math.toRadians(Random().nextFloat(0f,360f)),Math.toRadians(Random().nextFloat(0f,360f)) )
+            //rendertemp.rotate(Math.toRadians(Random().nextFloat(0f,360f)),Math.toRadians(Random().nextFloat(0f,360f)),Math.toRadians(Random().nextFloat(0f,360f)) )
             asteroidlist.add(rendertemp)
         }
 
@@ -233,24 +254,42 @@ class Scene(private val window: GameWindow) {
         camera.updateProjectionMatrix()
         camera.bind(staticShader)
 
-        pointLight2.bind(staticShader,camera.getCalculateViewMatrix(),2)
-        pointLight.bind(staticShader,camera.getCalculateViewMatrix(),0)
-        pointLight3.bind(staticShader,camera.getCalculateViewMatrix(),1)
+
 
 
         spotLight.bind(staticShader, camera.getCalculateViewMatrix())
 
         motorrad.render(staticShader, Vector3f(1.2f,1.2f,1.2f))
         renderable.render(staticShader,Vector3f(0f,1f,0f))
-        //renderable2.render(staticShader, Vector3f(0.5f,0.5f,0.5f))
-        renderable3.render(staticShader, Vector3f(0.1f,0.1f,0.1f))
 
+
+
+
+
+       // renderable2.render(staticShader, Vector3f(0.5f,0.5f,0.5f))
+        renderable3.render(staticShader, Vector3f(0.1f,0.1f,0.1f))
+        if(shoot2==true){
+
+            ray2.render(staticShader, Vector3f(10f,0.1f,0.1f))
+            pointLight2.bind(staticShader,camera.getCalculateViewMatrix(),1)
+            ray2.translate(Vector3f(0f,3f,0f))
+            rayl2++
+            println(rayl2)
+
+            if(rayl2>=100){
+                ray2.translate(Vector3f(0f,-300f,0f))
+                shoot2= false
+                rayl2=0
+
+            }
+        }
         if(shoot==true){
-            ray.render(staticShader,Vector3f(10f,0.1f,0.1f))
+            ray.render(staticShader, Vector3f(10f,0.1f,0.1f))
             pointLight4.bind(staticShader,camera.getCalculateViewMatrix(),3)
             ray.translate(Vector3f(0f,3f,0f))
             rayl++
-            println(rayl)
+            if(rayl==50)
+                shoot2=true
 
             if(rayl>=100){
                 ray.translate(Vector3f(0f,-300f,0f))
@@ -261,21 +300,47 @@ class Scene(private val window: GameWindow) {
         }
 
 
+        /*
+        if(shoot==true) {
+
+                lightlist[3].parent=raylist[0]
+                raylist[0].render(staticShader, Vector3f(10f, 0.1f, 0.1f))
+                lightlist[3].bind(staticShader, camera.getCalculateViewMatrix(), 3)
+                raylist[0].translate(Vector3f(0f, 3f, 0f))
+                rayl++
+                /*if(rayl==50) {
+                    raylist[1].render(staticShader, Vector3f(10f, 0.1f, 0.1f))
+                    lightlist[1].bind(staticShader, camera.getCalculateViewMatrix(), 3)
+                    raylist[1].translate(Vector3f(0f, 3f, 0f))
+                    println(rayl)
+                }*/
+                if(rayl>=100)
+                {
+                    raylist[0].translate(Vector3f(0f, -300f, 0f))
+                    shoot = false
+                    rayl = 0
+                }
+
+
+
+
+            }*/
+
+
 
 
         for(i in 0..asteroidlist.lastIndex-1)
         {
-            asteroidlist[i].render(staticShader,Vector3f(0.4f,0.4f,0.4f))
-            if(Random().nextBoolean()==true)
-            asteroidlist[i].translate(Vector3f(Random().nextFloat(0f,1f),Random().nextFloat(0f,1f),Random().nextFloat(0f,1f)))
 
-            //else
-             //   asteroidlist[i].translate(Vector3f(Random().nextFloat(-10f,0f),Random().nextFloat(-10f,0f),Random().nextFloat(-10f,0f)))
+
+                asteroidlist[i].translate(motorrad.getWorldPosition().sub(asteroidlist[i].getWorldPosition(),Vector3f()).normalize())
+
+            asteroidlist[i].render(staticShader,Vector3f(0.4f,0.4f,0.4f))
         }
 
         if(pause)
         {
-            println(score)
+            //println(score)
             score+=0.01f
         }
         /*if(score.toInt()%2000==0){
@@ -288,11 +353,14 @@ class Scene(private val window: GameWindow) {
             asteroidlist.add(rendertemp)
 
         }*/
-    println(asteroidlist.lastIndex.toString())
+    //println(asteroidlist.lastIndex.toString())
 
     }
 
+
+
     fun update(dt: Float, t: Float) {
+
 
         if (window.getKeyState(GLFW_KEY_W) == true) {
             val forward = Vector3f(0f, 0f, speed)
@@ -334,6 +402,7 @@ class Scene(private val window: GameWindow) {
             if(speed<=-0.1f)
                 speed+=0.01f
         }
+
     }
 
     private fun checkCollision() {
@@ -365,9 +434,14 @@ class Scene(private val window: GameWindow) {
 
     }
     fun onMouseButton(button: Int, action: Int, mode: Int) {
+
         shoot=true
         checkCollision()
+
     }
+
+
+
 
     fun onMouseScroll(xoffset: Double, yoffset: Double) {
         if (yoffset < 0)
