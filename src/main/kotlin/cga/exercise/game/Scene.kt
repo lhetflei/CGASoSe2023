@@ -43,6 +43,7 @@ class Scene(private val window: GameWindow) {
     //private val simpleMesh: Mesh
     //private val sphereMesh: Mesh
     private val groundMesh: Mesh
+    var vmaxa=0.01f
     var shoot2=false
     var cray=0
     var score =0f
@@ -65,6 +66,7 @@ class Scene(private val window: GameWindow) {
     var motorrad = Renderable(meshlist)
     var ray = Renderable(meshlist)
     var ray2 = Renderable(meshlist)
+    var ast = Renderable(meshlist)
 
     val desiredGammaValue = 2.2f // Beispielwert für den gewünschten Gammawert
 
@@ -243,13 +245,14 @@ class Scene(private val window: GameWindow) {
         for(i in 1..25)//random asteroid spawn
         {
             var rendertemp = ModelLoader.loadModel("assets/10464_Asteroid_L3.123c72035d71-abea-4a34-9131-5e9eeeffadcb/10464_Asteroid_v1_Iterations-2.obj", -1.5708f, 1.5708f, 0f)!!
-            var ascale=Random().nextFloat(0.005f,0.02f)
+            var ascale=Random().nextFloat(0.005f,0.01f)
 
             rendertemp.scale(Vector3f1(ascale,ascale,ascale))
             rendertemp.translate(Vector3f1(Random().nextFloat(-10000f,10000f),Random().nextFloat(-10000f,10000f),Random().nextFloat(-10000f,10000f)))
             //rendertemp.rotate(Math.toRadians(Random().nextFloat(0f,360f)),Math.toRadians(Random().nextFloat(0f,360f)),Math.toRadians(Random().nextFloat(0f,360f)) )
             asteroidlist.add(rendertemp)
         }
+        ast = ModelLoader.loadModel("assets/10464_Asteroid_L3.123c72035d71-abea-4a34-9131-5e9eeeffadcb/10464_Asteroid_v1_Iterations-2.obj", -1.5708f, 1.5708f, 0f)!!
 
     }
 
@@ -321,26 +324,28 @@ class Scene(private val window: GameWindow) {
         for(i in 0..asteroidlist.lastIndex-1)
         {
 
-                asteroidlist[i].translate(motorrad.getWorldPosition().sub(asteroidlist[i].getWorldPosition(),Vector3f1()).normalize())
+                asteroidlist[i].translate(motorrad.getWorldPosition().sub(asteroidlist[i].getWorldPosition(),Vector3f1()).mul(Vector3f1(vmaxa,vmaxa,vmaxa)))
 
-            asteroidlist[i].render(staticShader,Vector3f1(0.4f,0.4f,0.4f))
+            asteroidlist[i].render(staticShader,Vector3f1(0.3f,0.3f,0.3f))
         }
 
         if(pause)
         {
-            //println(score)
-            score+=0.01f
-        }
-        /*if(score.toInt()%2000==0){
-            var rendertemp = ModelLoader.loadModel("assets/10464_Asteroid_L3.123c72035d71-abea-4a34-9131-5e9eeeffadcb/10464_Asteroid_v1_Iterations-2.obj", -1.5708f, 1.5708f, 0f)!!
-            var ascale=Random().nextFloat(0.005f,0.02f)
 
-            rendertemp.scale(Vector3f(ascale,ascale,ascale))
-            rendertemp.translate(Vector3f(Random().nextFloat(-10000f,10000f),Random().nextFloat(-10000f,10000f),Random().nextFloat(-10000f,10000f)))
-            rendertemp.rotate(Math.toRadians(Random().nextFloat(0f,360f)),Math.toRadians(Random().nextFloat(0f,360f)),Math.toRadians(Random().nextFloat(0f,360f)) )
+            score+=1
+            if(score.toInt()%100==0)
+                vmaxa*=1.01f
+        }
+        if(score.toInt()%100==0){
+            var rendertemp = ModelLoader.loadModel("assets/a2/rock_by_dommk.obj", -1.5708f, 1.5708f, 0f)!!
+            var ascale=Random().nextFloat(0.05f,0.1f)
+
+            rendertemp.scale(Vector3f1(ascale,ascale,ascale))
+            rendertemp.translate(Vector3f1(Random().nextFloat(-10000f,10000f),Random().nextFloat(-10000f,10000f),Random().nextFloat(-10000f,10000f)))
+            //rendertemp.rotate(Math.toRadians(Random().nextFloat(0f,360f)),Math.toRadians(Random().nextFloat(0f,360f)),Math.toRadians(Random().nextFloat(0f,360f)) )
             asteroidlist.add(rendertemp)
 
-        }*/
+        }
     //println(asteroidlist.lastIndex.toString())
 
     }
@@ -418,9 +423,17 @@ class Scene(private val window: GameWindow) {
     }
 
     private fun setSpaceshipPositionToStart() {
-        val currentPosition = motorrad.getWorldPosition()
-        val translationVector = Vector3f1(initialSpaceshipPosition).sub(currentPosition)
-        motorrad.translate(translationVector)
+
+        motorrad.cleanup()
+        motorrad= ModelLoader.loadModel("assets/starsparrow/StarSparrow01.obj", 0f, Math.toRadians(180f), 0f)!!
+        camera.parent = motorrad
+        motorrad.scale(Vector3f1(0.8f, 0.8f, 0.8f))
+        motorrad.translate(initialSpaceshipPosition)
+        spotLight.parent = motorrad
+        ray.parent = motorrad
+        ray2.parent=motorrad
+        score=0f
+        vmaxa=0.01f
     }
 
     private fun checkCollisionAsteroid() {
@@ -436,6 +449,7 @@ class Scene(private val window: GameWindow) {
             if (distance < 10.0f) {
                 iterator.remove()
                 asteroid.cleanup()
+                score+=500f
             }
         }
     }
