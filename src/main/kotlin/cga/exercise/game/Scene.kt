@@ -52,6 +52,7 @@ class Scene(private val window: GameWindow) {
     var rayl2=0
     var speed = -0.1f
     var shoot =false
+    var cammode =0
     private val sphereMatrix = Matrix4f()
     private val groundMatrix = Matrix4f()
     var camselect=0f
@@ -78,7 +79,7 @@ class Scene(private val window: GameWindow) {
     val pointLight2 = PointLight(Vector3f1(0f,1f,0f), Vector3f1(30.0f,0.0f,30.0f))
     val pointLight3 = PointLight(Vector3f1(15f, 5f, -15f), Vector3f1(0f,0.0f,40.0f))
     val pointLight4 = PointLight(Vector3f1(0f, 1f, 0f), Vector3f1(30.0f,0.0f,0.0f))
-    val spotLight = SpotLight(Vector3f1(0f,2f,0f), Vector3f1(50f,50f,50f),Math.toRadians(10f),org.joml.Math.toRadians(30f))
+    val spotLight = SpotLight(Vector3f1(0f,2f,0f), Vector3f1(500f,500f,500f),Math.toRadians(1f),org.joml.Math.toRadians(2f))
 
     private val initialSpaceshipPosition = Vector3f1(0.0f, 1.0f, 0.0f)
     private var currentSpaceshipPosition = Vector3f1(initialSpaceshipPosition)
@@ -223,14 +224,14 @@ class Scene(private val window: GameWindow) {
         var raymesh = Mesh(ras.objects[0].meshes[0].vertexData,ras.objects[0].meshes[0].indexData,vertexAttributes,rayMaterial)
         ray = Renderable(mutableListOf(raymesh))
         ray.translate(spotLight.getPosition())
-        ray.translate(Vector3f1(0f,-1f,0f))
+        ray.translate(Vector3f1(0f,-3f,0f))
         ray.rotate(-1.5708f,1.5708f,0f)
 
         var ras2 = loadOBJ("assets/models/newscene.obj",true,true)
         var raymesh2 = Mesh(ras.objects[0].meshes[0].vertexData,ras.objects[0].meshes[0].indexData,vertexAttributes,rayMaterial)
         ray2 = Renderable(mutableListOf(raymesh2))
         ray2.translate(spotLight.getPosition())
-        ray2.translate(Vector3f1(0f,-1f,0f))
+        ray2.translate(Vector3f1(0f,-3f,0f))
         ray2.rotate(-1.5708f,1.5708f,0f)
 
 
@@ -352,9 +353,12 @@ class Scene(private val window: GameWindow) {
 
     fun update(dt: Float, t: Float) {
         collisionCheckTimer += dt
-
+        checkCollisionSpaceship()
+        if(shoot==true)
+        checkCollisionAsteroid()
         if (collisionCheckTimer >= collisionCheckInterval) {
             checkCollisionSpaceship()
+            if(shoot==true)
             checkCollisionAsteroid()
             collisionCheckTimer = 0f // Setze den Timer zurück
         }
@@ -365,14 +369,20 @@ class Scene(private val window: GameWindow) {
             motorrad.translate(forward)
         }
         if (window.getKeyState(GLFW_KEY_D) == true) {
-            motorrad.rotate(0f, -0.03f, 0.0f)
+            if(cammode==0)
+            motorrad.rotate(0.0f, 0.0f, -0.01f)
+            else
+                motorrad.rotate(0.0f, -0.01f, 0.0f)
         }
         if (window.getKeyState(GLFW_KEY_S) == true) {
             val backward = Vector3f1(0f, 0f, 0.2f)
             motorrad.translate(backward)
         }
         if (window.getKeyState(GLFW_KEY_A) == true) {
-            motorrad.rotate(0f, 0.03f, 0.0f)
+            if(cammode==0)
+            motorrad.rotate(0.0f, 0.0f, 0.01f)
+            else
+                motorrad.rotate(0.0f, 0.01f, 0.0f)
         }
         if (window.getKeyState(GLFW_KEY_L) == true) {
             tempshader=tempshader+0.1f
@@ -386,6 +396,14 @@ class Scene(private val window: GameWindow) {
         if (window.getKeyState(GLFW_KEY_P) == true) {
             shoot=true
             checkCollisionAsteroid()
+        }
+        if (window.getKeyState(GLFW_KEY_C) == true) {
+            if(cammode==0)
+            {
+                cammode=1
+            }
+            else
+                cammode=0
         }
         if (window.getKeyState(GLFW_KEY_LEFT_SHIFT) == true) {
 
@@ -408,11 +426,11 @@ class Scene(private val window: GameWindow) {
         val iterator = asteroidlist.iterator()
         while (iterator.hasNext()) {
             val asteroid = iterator.next()
-            val asteroidPosition = asteroid.getWorldPosition()
+            val asteroidPosition = asteroid.getWorldPosition().add(Vector3f1(0f,6f,0f))
 
             val distance = spaceshipPosition.distance(asteroidPosition)
 
-            if (distance < 10.0f) {
+            if (distance < 7.0f) {
                 iterator.remove()
                 asteroid.cleanup()
 
@@ -432,6 +450,8 @@ class Scene(private val window: GameWindow) {
         spotLight.parent = motorrad
         ray.parent = motorrad
         ray2.parent=motorrad
+        pointLight4.parent = ray
+        pointLight2.parent = ray2
         score=0f
         vmaxa=0.01f
     }
@@ -442,7 +462,8 @@ class Scene(private val window: GameWindow) {
         val iterator = asteroidlist.iterator()
         while (iterator.hasNext()) {
             val asteroid = iterator.next()
-            val asteroidPosition = asteroid.getWorldPosition()
+
+            val asteroidPosition = asteroid.getWorldPosition().add(Vector3f1(0f,5f,0f))
 
             val distance = shotPosition.distance(asteroidPosition)
 
@@ -461,8 +482,12 @@ class Scene(private val window: GameWindow) {
         val y_speed = (ypos - window.windowHeight/ 2.0).toFloat() * 0.002f
 
         glfwSetCursorPos(window.m_window, window.windowWidth / 2.0, window.windowHeight/ 2.0)
-        motorrad.rotate(-y_speed, 0f, 0f)
-        motorrad.rotate(0f, -x_speed, 0f)
+        if(cammode==0){
+        motorrad.rotate(-y_speed.coerceAtMost(0.015f).coerceAtLeast(-0.015f), 0f, 0f)
+        motorrad.rotate(0f, -x_speed.coerceAtMost(0.015f).coerceAtLeast(-0.015f), 0f)
+        }
+        else
+            camera.rotateAroundPoint(0f, -x_speed, 0f, renderable.getWorldPosition())
 
     }
     fun onMouseButton(button: Int, action: Int, mode: Int) {
