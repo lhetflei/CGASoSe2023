@@ -65,6 +65,8 @@ class Scene(private val window: GameWindow) {
     var renderable2 = Renderable(meshlist)
     var renderable3 = Renderable(meshlist)
     var motorrad = Renderable(meshlist)
+    var skybox = Renderable(meshlist)
+    var skyboxMaterial: Material
     var ray = Renderable(meshlist)
     var ray2 = Renderable(meshlist)
     var ast = Renderable(meshlist)
@@ -114,18 +116,28 @@ class Scene(private val window: GameWindow) {
 
 
         val res = loadOBJ("assets/models/ground.obj", true, true)
+        val cu = loadOBJ("assets/models/skybox.obj", true, true)
 
         //Get the first mesh of the first object
 
         val objMesh = res.objects[0].meshes[0]
         val objres = loadOBJ("assets/models/sphere.obj", true, true)
         val objsphereMesh = objres.objects[0].meshes[0]
-        val stride = 8 * 4
-
+        /*val stride = 8 * 4
         val vertexAttributes = arrayOf<VertexAttribute>(
                  VertexAttribute(3,GL_FLOAT, stride, 0)
                 ,VertexAttribute(2, GL_FLOAT, stride, (3 * 4).toLong())
-                ,VertexAttribute(3, GL_FLOAT, stride, (5 * 4).toLong()))
+                ,VertexAttribute(3, GL_FLOAT, stride, (5 * 4).toLong()))*/
+
+        val stride = 8 * 4
+        val atr1 = VertexAttribute(3, GL_FLOAT, stride, 0)     //position attribute
+        val atr2 = VertexAttribute(3, GL_FLOAT, stride, 3 * 4) //texture coordinate attribute
+        val atr3 = VertexAttribute(3, GL_FLOAT, stride, 5 * 4) //normal attribute
+        val vertexAttributes = arrayOf(atr1, atr2, atr3)
+
+        val atr4 = VertexAttribute(3, GL_FLOAT,12,0)
+        val SkyBoxVertexAttribute = arrayOf(atr4, atr2, atr3)
+
 
         //1.3 mesh
 
@@ -164,12 +176,10 @@ class Scene(private val window: GameWindow) {
         val spec = Texture2D("assets/textures/ground_diff.png", true)
         val ground = Texture2D("assets/textures/ground_emit.png", true)
         val diff =Texture2D("assets/textures/ground_diff.png", true)
+        var skyboxMat = Texture2D("assets/textures/skybox.png", true)
 
         ground.bind(0)
-
         ground.setTexParams(GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR)
-
-
         ground.unbind()
 
 
@@ -190,11 +200,17 @@ class Scene(private val window: GameWindow) {
             60.0f,
             Vector2f(64.0f, 64.0f)
         )
+        skyboxMaterial = Material(diff, skyboxMat, spec, 60f, Vector2f(1.0f, 1.0f))
+
         floorMaterial.bind(staticShader)
 
 
 
         groundMesh = Mesh(objMesh.vertexData, objMesh.indexData, vertexAttributes, floorMaterial)
+
+        var skyboxmesh = Mesh(cu.objects[0].meshes[0].vertexData,cu.objects[0].meshes[0].indexData,vertexAttributes,skyboxMaterial)
+        skybox = Renderable(mutableListOf(skyboxmesh))
+
         //motorrad= ModelLoader.loadModel("assets/newship/AirShip.obj", 0f, Math.toRadians(180f), 0f)!!
         //motorrad= ModelLoader.loadModel("assets/ship/scene.obj", 0f, Math.toRadians(180f), 0f)!!
         //motorrad= ModelLoader.loadModel("assets/xwing/x-wing-flyingv1.obj", 0f, Math.toRadians(180f), 0f)!!
@@ -205,7 +221,9 @@ class Scene(private val window: GameWindow) {
         motorrad.translate(initialSpaceshipPosition)
 
 
-
+        skybox.translate(motorrad.getWorldPosition())
+        skybox.scale(Vector3f1(750f,750f,750f))
+        skybox.parent = motorrad
 
 
 
@@ -274,12 +292,14 @@ class Scene(private val window: GameWindow) {
 
         spotLight.bind(staticShader, camera.getCalculateViewMatrix())
 
+        skybox.render(staticShader, Vector3f1(1f,1f,1.15f))
+
         motorrad.render(staticShader, Vector3f1(1.2f,1.2f,1.2f))
-        renderable.render(staticShader, Vector3f1(0f,1f,0f))
+        //renderable.render(staticShader, Vector3f1(0f,1f,0f))
         //renderable2.render(staticShader, Vector3f(0.5f,0.5f,0.5f))
         renderable3.render(staticShader, Vector3f1(0.1f,0.1f,0.1f))
         motorrad.render(staticShader, Vector3f1(1.2f,1.2f,1.2f))
-        renderable.render(staticShader,Vector3f1(0f,1f,0f))
+        //renderable.render(staticShader,Vector3f1(0f,1f,0f))
 
 
 
