@@ -91,7 +91,7 @@ if (shader>=0&&shader<=1){
     for (int i = 0; i < 10; i++) {
         vec3 lightDirpoint = normalize(vertexData.lightDirpoint[i]);
         float distance = length(vertexData.lightDirpoint[i]);
-        float attenuation = 1.0 / (distance * distance);  // attenuation
+        float attenuation = 100.0 / (distance * distance);  // attenuation
         color.xyz += brdf(normal, lightDirpoint, viewDir, linearSpecularCol, linearDiffuseCol, shininess, attenuation) * pointLight.lightColor[i];
 
         /*vec3 lightDirpoint = normalize(vertexData.lightDirpoint[i]);
@@ -116,11 +116,15 @@ if (shader>=0&&shader<=1){
 }
 if(shader>1&&shader<=2)
 {
-    float intensity=0f;
+    vec4 diffuseCol = texture(material_diffuse, vertexData.tc);
+    vec4 specularCol = texture(material_specular, vertexData.tc);
+    vec3 linearDiffuseCol = gamma(diffuseCol.xyz);
+    vec3 linearSpecularCol = gamma(specularCol.xyz);
+    vec3 intensity;
     //float intensity;
     vec4 ambientCol = vec4(0.04, 0.04, 0.04,1.0);
-    color=ambientCol;
     vec4 emissiveCol = texture(material_emissive, vertexData.tc)*vec4(emit_col,1.0);
+    intensity= ambientCol.xyz+emissiveCol.xyz;
     vec3 normal = normalize(vertexData.normal);
     vec3 lightDirspot = normalize(vertexData.lightDirspot);
     vec3 lightDirection = normalize(spotLight.direction);
@@ -128,29 +132,29 @@ if(shader>1&&shader<=2)
     float gamma = spotLight.outerConeAngle;
     float phi = spotLight.innerConeAngle;
 
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 10; i++) {
         float distance = length(vertexData.lightDirpoint[i]);
-        float attenuation = 100.0 / (distance * distance);// attenuation
-        intensity += dot(normalize(vertexData.lightDirpoint[i]), normal)*attenuation;
-
-        if (intensity > 0.55)
-        color += vec4(1.0, 0.5, 0.5, 1.0);
-        else if (intensity > 0.25)
-        color += vec4(0.6, 0.3, 0.3, 1.0);
-        else if (intensity > 0.15)
-        color += vec4(0.4, 0.2, 0.2, 1.0);
-        else
-        color += vec4(0.2, 0.1, 0.1, 1.0);
+        float attenuation = 1000.0 / (distance * distance);// attenuation
+        intensity.xyz += brdf(normal, normalize( vertexData.lightDirpoint[i]), normalize(vertexData.viewDir), linearSpecularCol, linearDiffuseCol, shininess, attenuation*0.8) * pointLight.lightColor[i];
     }
-    intensity += clamp((theta - gamma) / (phi - gamma), 0.0, 1.0)*100.0/(length(vertexData.lightDirspot)*length(vertexData.lightDirspot));
-    if (intensity > 0.55)
+    if (intensity.x > 0.95||intensity.y > 0.95||intensity.z > 0.95)
+    color = vec4(1.0,0.5,0.5,1.0);
+    else if (intensity.x > 0.35||intensity.y > 0.35||intensity.z > 0.35)
+    color = vec4(0.6,0.3,0.3,1.0);
+    else if (intensity.x > 0.2||intensity.y > 0.2||intensity.z > 0.2)
+    color = vec4(0.4,0.2,0.2,1.0);
+    else
+    color = vec4(0.1,0.05,0.05,1.0);
+
+    /*intensity += clamp((theta - gamma) / (phi - gamma), 0.0, 1.0)*100.0/(length(vertexData.lightDirspot)*length(vertexData.lightDirspot));
+    if (intensity > 0.65)
     color = vec4(1.0, 0.5, 0.5, 1.0);
-    else if (intensity > 0.25)
+    else if (intensity > 0.35)
     color = vec4(0.6, 0.3, 0.3, 1.0);
-    else if (intensity > 0.15)
+    else if (intensity > 0.2)
     color = vec4(0.4, 0.2, 0.2, 1.0);
     else
-    color = vec4(0.2, 0.1, 0.1, 1.0);
+    color = vec4(0.1, 0.1, 0.1, 1.0);*/
 
 
 

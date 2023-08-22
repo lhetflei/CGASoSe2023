@@ -43,7 +43,9 @@ class Scene(private val window: GameWindow) {
     //private val simpleMesh: Mesh
     //private val sphereMesh: Mesh
     private val groundMesh: Mesh
+    var astmesh: Mesh
     var vmaxa=0.01f
+    var vmaxa2=0.0001f
     var shoot2=false
     var cray=0
     var score =0f
@@ -58,9 +60,11 @@ class Scene(private val window: GameWindow) {
     var camselect=0f
     var tempshader=1f
     var asteroidlist = mutableListOf<Renderable>()
+    var asteroidlist2 = mutableListOf<Renderable>()
     var raylist = mutableListOf<Renderable>()
     var meshlist = mutableListOf<Mesh>()
     var lightlist = mutableListOf<PointLight>()
+    //var astmesh = Renderable(meshlist)
     var renderable = Renderable(meshlist)
     var renderable2 = Renderable(meshlist)
     var renderable3 = Renderable(meshlist)
@@ -70,18 +74,37 @@ class Scene(private val window: GameWindow) {
     var ray = Renderable(meshlist)
     var ray2 = Renderable(meshlist)
     var ast = Renderable(meshlist)
+    val stride = 8 * 4
+    val atr1 = VertexAttribute(3, GL_FLOAT, stride, 0)     //position attribute
+    val atr2 = VertexAttribute(3, GL_FLOAT, stride, 3 * 4) //texture coordinate attribute
+    val atr3 = VertexAttribute(3, GL_FLOAT, stride, 5 * 4) //normal attribute
+    val vertexAttributes = arrayOf(atr1, atr2, atr3)
+    var astobj =loadOBJ("assets/a2/rock_by_dommk.obj",true,true)
+    var astdiff = Texture2D("assets/a2/rock_Base_Color.png",true)
+    var astemit = Texture2D("assets/a2/rock_Height.png",true)
+    var astspec = Texture2D("assets/a2/rock_by_dommk_nmap.tga",true)
+    val astmat=Material(
+        astdiff,
+        astemit,
+        astspec,
+        2.0f,
+        Vector2f(1.0f, 1.0f)
+
+    )
+
 
     val desiredGammaValue = 2.2f // Beispielwert für den gewünschten Gammawert
 
-    val lightPosition = Vector3f1(-15f, 5f, 15f) // Anpassen der Lichtposition
-    val lightColor = Vector3f1(20f, 20f, 20f) // Anpassen der Lichtfarbe (hier: Weiß)
+    val lightPosition = Vector3f1(0f, 5f, 0f) // Anpassen der Lichtposition
+    val lightColor = Vector3f1(0.11f, 0.11f, 0.11f) // Anpassen der Lichtfarbe (hier: Weiß)
 
     val pointLight = PointLight(lightPosition, lightColor)
 
-    val pointLight2 = PointLight(Vector3f1(0f,1f,0f), Vector3f1(30.0f,0.0f,30.0f))
+    var pointLight2 = PointLight(Vector3f1(0f,1f,0f), Vector3f1(0.0f,0.0f,0.0f))
     val pointLight3 = PointLight(Vector3f1(15f, 5f, -15f), Vector3f1(0f,0.0f,40.0f))
-    val pointLight4 = PointLight(Vector3f1(0f, 1f, 0f), Vector3f1(30.0f,0.0f,0.0f))
+    var pointLight4 = PointLight(Vector3f1(0f, 1f, 0f), Vector3f1(0.0f,0.0f,0.0f))
     val spotLight = SpotLight(Vector3f1(0f,2f,0f), Vector3f1(500f,500f,500f),Math.toRadians(1f),org.joml.Math.toRadians(2f))
+    val pointLight5 = PointLight(Vector3f1(0f,0f,0f), Vector3f1(500.0f,500.0f,500.0f))
 
     private val initialSpaceshipPosition = Vector3f1(0.0f, 1.0f, 0.0f)
     private var currentSpaceshipPosition = Vector3f1(initialSpaceshipPosition)
@@ -129,11 +152,7 @@ class Scene(private val window: GameWindow) {
                 ,VertexAttribute(2, GL_FLOAT, stride, (3 * 4).toLong())
                 ,VertexAttribute(3, GL_FLOAT, stride, (5 * 4).toLong()))*/
 
-        val stride = 8 * 4
-        val atr1 = VertexAttribute(3, GL_FLOAT, stride, 0)     //position attribute
-        val atr2 = VertexAttribute(3, GL_FLOAT, stride, 3 * 4) //texture coordinate attribute
-        val atr3 = VertexAttribute(3, GL_FLOAT, stride, 5 * 4) //normal attribute
-        val vertexAttributes = arrayOf(atr1, atr2, atr3)
+
 
         val atr4 = VertexAttribute(3, GL_FLOAT,12,0)
         val SkyBoxVertexAttribute = arrayOf(atr4, atr2, atr3)
@@ -177,6 +196,7 @@ class Scene(private val window: GameWindow) {
         val ground = Texture2D("assets/textures/ground_emit.png", true)
         val diff =Texture2D("assets/textures/ground_diff.png", true)
         var skyboxMat = Texture2D("assets/textures/skybox.png", true)
+        var raytex = Texture2D("assets/textures/ground_diff.png", true)
 
         ground.bind(0)
         ground.setTexParams(GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR)
@@ -195,14 +215,14 @@ class Scene(private val window: GameWindow) {
         val rayMaterial = Material(
 
             diff,
-            emit = Texture2D("assets/textures/ground_emit.png", true),
-            spec,
-            60.0f,
-            Vector2f(64.0f, 64.0f)
+            raytex,
+            raytex,
+            600.0f,
+            Vector2f(1.0f, 1.0f)
         )
         skyboxMaterial = Material(diff, skyboxMat, spec, 60f, Vector2f(1.0f, 1.0f))
 
-        floorMaterial.bind(staticShader)
+        //floorMaterial.bind(staticShader)
 
 
 
@@ -223,7 +243,7 @@ class Scene(private val window: GameWindow) {
 
         skybox.translate(motorrad.getWorldPosition())
         skybox.scale(Vector3f1(750f,750f,750f))
-        skybox.parent = motorrad
+        //skybox.parent = motorrad
 
 
 
@@ -232,25 +252,31 @@ class Scene(private val window: GameWindow) {
         renderable2 = ModelLoader.loadModel("assets/10464_Asteroid_L3.123c72035d71-abea-4a34-9131-5e9eeeffadcb/10464_Asteroid_v1_Iterations-2.obj", -1.5708f, 1.5708f, 0f)!!
         renderable2.scale(Vector3f1(0.005f,0.005f,0.005f))
         renderable2.translate(Vector3f1(500f,20f,0f))
-        renderable3.scale(Vector3f1(0.05f,0.05f,0.05f))
-        renderable3.translate(Vector3f1(-500f,20f,0f))
+        renderable3.scale(Vector3f1(0.5f,0.5f,0.5f))
+        renderable3.translate(Vector3f1(-500f,1100f,0f))
         renderable = Renderable(mutableListOf<Mesh>(groundMesh))
         renderable.scale(Vector3f1(25.7f, 25.7f, 25.7f))
-
+        pointLight5.parent=renderable3
 
         var ras = loadOBJ("assets/models/newscene.obj",true,true)
         var raymesh = Mesh(ras.objects[0].meshes[0].vertexData,ras.objects[0].meshes[0].indexData,vertexAttributes,rayMaterial)
         ray = Renderable(mutableListOf(raymesh))
-        ray.translate(spotLight.getPosition())
-        ray.translate(Vector3f1(0f,-3f,0f))
+        ray.scale(Vector3f1(5f,5f,5f))
+        //ray.translate(spotLight.getPosition())
+        ray.translate(Vector3f1(0f,0f,0f))
         ray.rotate(-1.5708f,1.5708f,0f)
 
         var ras2 = loadOBJ("assets/models/newscene.obj",true,true)
         var raymesh2 = Mesh(ras.objects[0].meshes[0].vertexData,ras.objects[0].meshes[0].indexData,vertexAttributes,rayMaterial)
         ray2 = Renderable(mutableListOf(raymesh2))
-        ray2.translate(spotLight.getPosition())
-        ray2.translate(Vector3f1(0f,-3f,0f))
+        ray2.scale(Vector3f1(5f,5f,5f))
+        //ray2.translate(spotLight.getPosition())
+        ray2.translate(Vector3f1(0f,0f,0f))
         ray2.rotate(-1.5708f,1.5708f,0f)
+
+
+        //var astmesh= Mesh(astobj.objects[0].meshes[0].vertexData,ras.objects[0].meshes[0].indexData,vertexAttributes,astmat)
+
 
 
         //ray.scale(Vector3f(1.1f,2.1f,2.1f))
@@ -260,8 +286,9 @@ class Scene(private val window: GameWindow) {
         ray2.parent=motorrad
         pointLight4.parent = ray
         pointLight2.parent = ray2
+        pointLight.parent = motorrad
 
-        for(i in 1..25)//random asteroid spawn
+        for(i in 1..50)//random asteroid spawn
         {
             var rendertemp = ModelLoader.loadModel("assets/10464_Asteroid_L3.123c72035d71-abea-4a34-9131-5e9eeeffadcb/10464_Asteroid_v1_Iterations-2.obj", -1.5708f, 1.5708f, 0f)!!
             var ascale=Random().nextFloat(0.005f,0.01f)
@@ -271,7 +298,8 @@ class Scene(private val window: GameWindow) {
             //rendertemp.rotate(Math.toRadians(Random().nextFloat(0f,360f)),Math.toRadians(Random().nextFloat(0f,360f)),Math.toRadians(Random().nextFloat(0f,360f)) )
             asteroidlist.add(rendertemp)
         }
-        ast = ModelLoader.loadModel("assets/10464_Asteroid_L3.123c72035d71-abea-4a34-9131-5e9eeeffadcb/10464_Asteroid_v1_Iterations-2.obj", -1.5708f, 1.5708f, 0f)!!
+       // ast = ModelLoader.loadModel("assets/10464_Asteroid_L3.123c72035d71-abea-4a34-9131-5e9eeeffadcb/10464_Asteroid_v1_Iterations-2.obj", -1.5708f, 1.5708f, 0f)!!
+        astmesh= Mesh(astobj.objects[0].meshes[0].vertexData,astobj.objects[0].meshes[0].indexData,vertexAttributes,astmat)
 
     }
 
@@ -287,8 +315,8 @@ class Scene(private val window: GameWindow) {
 
 
         pointLight.bind(staticShader,camera.getCalculateViewMatrix(),0)
-        pointLight3.bind(staticShader,camera.getCalculateViewMatrix(),1)
-
+        //pointLight3.bind(staticShader,camera.getCalculateViewMatrix(),2)
+        pointLight5.bind(staticShader,camera.getCalculateViewMatrix(),4)
 
         spotLight.bind(staticShader, camera.getCalculateViewMatrix())
 
@@ -297,9 +325,10 @@ class Scene(private val window: GameWindow) {
         motorrad.render(staticShader, Vector3f1(1.2f,1.2f,1.2f))
         //renderable.render(staticShader, Vector3f1(0f,1f,0f))
         //renderable2.render(staticShader, Vector3f(0.5f,0.5f,0.5f))
-        renderable3.render(staticShader, Vector3f1(0.1f,0.1f,0.1f))
+        renderable3.render(staticShader, Vector3f1(1f,1f,1f))
         motorrad.render(staticShader, Vector3f1(1.2f,1.2f,1.2f))
         //renderable.render(staticShader,Vector3f1(0f,1f,0f))
+
 
 
 
@@ -308,15 +337,22 @@ class Scene(private val window: GameWindow) {
        // renderable2.render(staticShader, Vector3f(0.5f,0.5f,0.5f))
         renderable3.render(staticShader, Vector3f1(0.1f,0.1f,0.1f))
         if(shoot2==true){
-
+            pointLight2 = PointLight(Vector3f1(0f,1f,0f), Vector3f1(5.0f,0.0f,5.0f))
+            pointLight2.parent=ray2
             ray2.render(staticShader, Vector3f1(10f,0.1f,0.1f))
             pointLight2.bind(staticShader,camera.getCalculateViewMatrix(),1)
-            ray2.translate(Vector3f1(0f,3f,0f))
+
+            ray2.translate(Vector3f1(0f,1f,0f))
             rayl2++
-            println(rayl2)
+            //println(rayl2)
 
             if(rayl2>=100){
-                ray2.translate(Vector3f1(0f,-300f,0f))
+
+                ray2.translate(Vector3f1(0f,-100f,0f))
+                //pointLight2.translate(Vector3f1(0f,-300f,0f))
+                pointLight2 = PointLight(Vector3f1(0f,1f,0f), Vector3f1(0.0f,0.0f,0.0f))
+                pointLight2.parent=ray2
+                pointLight2.bind(staticShader,camera.getCalculateViewMatrix(),1)
                 shoot2= false
                 rayl2=0
 
@@ -324,15 +360,20 @@ class Scene(private val window: GameWindow) {
         }
         if(shoot==true){
             ray.render(staticShader, Vector3f1(10f,0.1f,0.1f))
-
+            pointLight4 = PointLight(Vector3f1(0f, 1f, 0f), Vector3f1(5.0f,0.0f,0.0f))
+            pointLight4.parent=ray
             pointLight4.bind(staticShader,camera.getCalculateViewMatrix(),3)
-            ray.translate(Vector3f1(0f,3f,0f))
+            ray.translate(Vector3f1(0f,1f,0f))
             rayl++
             if(rayl==50)
                 shoot2=true
 
             if(rayl>=100){
-                ray.translate(Vector3f1(0f,-300f,0f))
+                ray.translate(Vector3f1(0f,-100f,0f))
+                //pointLight4.translate(Vector3f1(0f,-300f,0f))
+                pointLight4 = PointLight(Vector3f1(0f, 1f, 0f), Vector3f1(0.0f,0.0f,0.0f))
+                pointLight4.parent=ray
+                pointLight4.bind(staticShader,camera.getCalculateViewMatrix(),3)
                 shoot= false
                 rayl=0
 
@@ -342,30 +383,47 @@ class Scene(private val window: GameWindow) {
 
 
 
-        for(i in 0..asteroidlist.lastIndex-1)
-        {
 
-                asteroidlist[i].translate(motorrad.getWorldPosition().sub(asteroidlist[i].getWorldPosition(),Vector3f1()).mul(Vector3f1(vmaxa,vmaxa,vmaxa)))
-
-            asteroidlist[i].render(staticShader,Vector3f1(0.3f,0.3f,0.3f))
-        }
 
         if(pause)
         {
+            for(i in 0..asteroidlist.lastIndex-1)
+            {
 
+                asteroidlist[i].translate(motorrad.getWorldPosition().sub(asteroidlist[i].getWorldPosition(),Vector3f1()).mul(Vector3f1(vmaxa,vmaxa,vmaxa)))
+
+                asteroidlist[i].render(staticShader,Vector3f1(0.2f,0.2f,0.2f))
+            }
+            for(i in 0..asteroidlist2.lastIndex-1)
+            {
+
+                asteroidlist2[i].translate(motorrad.getWorldPosition().sub(asteroidlist2[i].getWorldPosition(),Vector3f1()).mul(Vector3f1(vmaxa2,vmaxa2,vmaxa2)))
+
+                asteroidlist2[i].render(staticShader,Vector3f1(0.2f,0.15f,0.15f))
+            }
+
+            println(score)
+            println(vmaxa)
             score+=1
             if(score.toInt()%100==0)
                 vmaxa*=1.01f
-        }
+                vmaxa2*=1.0001f
+
         if(score.toInt()%100==0){
-            var rendertemp = ModelLoader.loadModel("assets/a2/rock_by_dommk.obj", -1.5708f, 1.5708f, 0f)!!
-            var ascale=Random().nextFloat(0.05f,0.1f)
+
+            //var rendertemp = ModelLoader.loadModel("assets/a2/rock_by_dommk.obj", -1.5708f, 1.5708f, 0f)!!
+            astmesh= Mesh(astobj.objects[0].meshes[0].vertexData,astobj.objects[0].meshes[0].indexData,vertexAttributes,astmat)
+            var rendertemp = Renderable(mutableListOf(astmesh))
+
+
+            var ascale=Random().nextFloat(6f,10f)
 
             rendertemp.scale(Vector3f1(ascale,ascale,ascale))
-            rendertemp.translate(Vector3f1(Random().nextFloat(-10000f,10000f),Random().nextFloat(-10000f,10000f),Random().nextFloat(-10000f,10000f)))
+            rendertemp.translate(Vector3f1(Random().nextFloat(-100f,100f),Random().nextFloat(-100f,100f),Random().nextFloat(-100f,100f)))
             //rendertemp.rotate(Math.toRadians(Random().nextFloat(0f,360f)),Math.toRadians(Random().nextFloat(0f,360f)),Math.toRadians(Random().nextFloat(0f,360f)) )
-            asteroidlist.add(rendertemp)
+            asteroidlist2.add(rendertemp)
 
+        }
         }
     //println(asteroidlist.lastIndex.toString())
 
@@ -389,25 +447,35 @@ class Scene(private val window: GameWindow) {
             motorrad.translate(forward)
         }
         if (window.getKeyState(GLFW_KEY_D) == true) {
-            if(cammode==0)
+            if(cammode==0){
             motorrad.rotate(0.0f, 0.0f, -0.01f)
-            else
+            //skybox.rotate(0f,0f,0.01f)
+                }
+
+            else{
                 motorrad.rotate(0.0f, -0.01f, 0.0f)
+           // skybox.rotate(0f,0.01f,0f)
+            }
         }
         if (window.getKeyState(GLFW_KEY_S) == true) {
             val backward = Vector3f1(0f, 0f, 0.2f)
             motorrad.translate(backward)
         }
         if (window.getKeyState(GLFW_KEY_A) == true) {
-            if(cammode==0)
+            if(cammode==0){
             motorrad.rotate(0.0f, 0.0f, 0.01f)
-            else
+           // skybox.rotate(0f,0f,-0.01f)
+                }
+            else{
                 motorrad.rotate(0.0f, 0.01f, 0.0f)
+                //skybox.rotate(0f,-0.01f,0f)
+            }
         }
         if (window.getKeyState(GLFW_KEY_L) == true) {
             tempshader=tempshader+0.1f
             if(tempshader>=3f){
-                tempshader=0f}
+                tempshader=0f
+            }
             staticShader.setUniform("shader",tempshader)
         }
         if (window.getKeyState(GLFW_KEY_ESCAPE) == true) {
@@ -444,6 +512,7 @@ class Scene(private val window: GameWindow) {
         val spaceshipPosition = motorrad.getWorldPosition()
 
         val iterator = asteroidlist.iterator()
+        val iterator2 = asteroidlist2.iterator()
         while (iterator.hasNext()) {
             val asteroid = iterator.next()
             val asteroidPosition = asteroid.getWorldPosition().add(Vector3f1(0f,6f,0f))
@@ -452,6 +521,20 @@ class Scene(private val window: GameWindow) {
 
             if (distance < 7.0f) {
                 iterator.remove()
+                asteroid.cleanup()
+
+                // Setze das Raumschiff an den Punkt des Spielstarts zurück
+                setSpaceshipPositionToStart()
+            }
+        }
+        while (iterator2.hasNext()) {
+            val asteroid = iterator2.next()
+            val asteroidPosition = asteroid.getWorldPosition().add(Vector3f1(0f,6f,0f))
+
+            val distance = spaceshipPosition.distance(asteroidPosition)
+
+            if (distance < 12.0f) {
+                iterator2.remove()
                 asteroid.cleanup()
 
                 // Setze das Raumschiff an den Punkt des Spielstarts zurück
@@ -472,23 +555,40 @@ class Scene(private val window: GameWindow) {
         ray2.parent=motorrad
         pointLight4.parent = ray
         pointLight2.parent = ray2
+        pointLight.parent = motorrad
+       // skybox.parent = motorrad
         score=0f
         vmaxa=0.01f
+        vmaxa2=0.0001f
     }
 
     private fun checkCollisionAsteroid() {
         val shotPosition = ray.getWorldPosition()
-
+        val shotPosition2 = ray2.getWorldPosition()
         val iterator = asteroidlist.iterator()
+        val iterator2 = asteroidlist2.iterator()
         while (iterator.hasNext()) {
             val asteroid = iterator.next()
 
             val asteroidPosition = asteroid.getWorldPosition().add(Vector3f1(0f,5f,0f))
 
             val distance = shotPosition.distance(asteroidPosition)
-
-            if (distance < 10.0f) {
+            val distance2 = shotPosition2.distance(asteroidPosition)
+            if (distance < 8.0f||distance2 < 8.0f) {
                 iterator.remove()
+                asteroid.cleanup()
+                score+=500f
+            }
+        }
+        while (iterator2.hasNext()) {
+            val asteroid = iterator2.next()
+
+            val asteroidPosition = asteroid.getWorldPosition().add(Vector3f1(0f,5f,0f))
+
+            val distance = shotPosition.distance(asteroidPosition)
+            val distance2 = shotPosition2.distance(asteroidPosition)
+            if (distance < 8.0f||distance2 < 8.0f) {
+                iterator2.remove()
                 asteroid.cleanup()
                 score+=500f
             }
@@ -505,6 +605,8 @@ class Scene(private val window: GameWindow) {
         if(cammode==0){
         motorrad.rotate(-y_speed.coerceAtMost(0.015f).coerceAtLeast(-0.015f), 0f, 0f)
         motorrad.rotate(0f, -x_speed.coerceAtMost(0.015f).coerceAtLeast(-0.015f), 0f)
+            //skybox.rotate(y_speed.coerceAtMost(0.015f).coerceAtLeast(-0.015f), 0f, 0f)
+           // skybox.rotate(0f, x_speed.coerceAtMost(0.015f).coerceAtLeast(-0.015f), 0f)
         }
         else
             camera.rotateAroundPoint(0f, -x_speed, 0f, renderable.getWorldPosition())
@@ -532,7 +634,9 @@ class Scene(private val window: GameWindow) {
         for (asteroid in asteroidlist) {
             asteroid.cleanup()
         }
-
+        for (asteroid in asteroidlist2) {
+            asteroid.cleanup()
+        }
 
     }
 

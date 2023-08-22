@@ -134,6 +134,7 @@ object ModelLoader {
         return data
     }
 
+
     fun loadModel(objpath: String, pitch: Float, yaw: Float, roll: Float): Renderable? {
         val model = load(objpath) ?: return null
         val textures = ArrayList<Texture2D>()

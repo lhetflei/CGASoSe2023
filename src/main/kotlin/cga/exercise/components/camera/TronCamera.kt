@@ -9,7 +9,7 @@ class TronCamera : Transformable(), ICamera {
     private val fov: Float = Math.toRadians(90.0).toFloat() // Field of View
     private val aspectRatio: Float = 16.0f / 9.0f // Seitenverhältnis (horizontaler Öffnungswinkel)
     private val nearPlane: Float = 0.01f // Near Plane
-    private val farPlane: Float = 1000.0f // Far Plane
+    private val farPlane: Float = 10000.0f // Far Plane
 
     private var viewMatrix: Matrix4f = Matrix4f() // View-Matrix
     private var projectionMatrix: Matrix4f = Matrix4f() // Projection-Matrix

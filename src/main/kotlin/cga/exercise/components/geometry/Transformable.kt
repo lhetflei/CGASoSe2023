@@ -83,6 +83,7 @@ open class Transformable(private var modelMatrix: Matrix4f = Matrix4f(), var par
         //throw NotImplementedError()
     }
 
+
     /**
      * Translates object based on its parent coordinate system.
      * Hint: this operation has to be left-multiplied

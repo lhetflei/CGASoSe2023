@@ -11,6 +11,7 @@ class Renderable(private val meshes: MutableList<Mesh>) : Transformable() , IRen
             mesh.cleanup()
         }
     }
+
     override fun render(shaderProgram: ShaderProgram,emitcol:Vector3f) {
 
         shaderProgram.use()
