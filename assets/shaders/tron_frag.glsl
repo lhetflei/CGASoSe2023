@@ -116,7 +116,7 @@ if (shader>=0&&shader<=1){
 }
 if(shader>1&&shader<=2)
 {
-    float intensity=0f;
+    float intensity=0.0f;
     //float intensity;
     vec4 ambientCol = vec4(0.04, 0.04, 0.04,1.0);
     color=ambientCol;

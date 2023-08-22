@@ -66,6 +66,7 @@ class Scene(private val window: GameWindow) {
     var renderable3 = Renderable(meshlist)
     var motorrad = Renderable(meshlist)
     var skybox = Renderable(meshlist)
+    var game_over = Renderable(meshlist)
     var skyboxMaterial: Material
     var ray = Renderable(meshlist)
     var ray2 = Renderable(meshlist)
@@ -117,6 +118,7 @@ class Scene(private val window: GameWindow) {
 
         val res = loadOBJ("assets/models/ground.obj", true, true)
         val cu = loadOBJ("assets/models/skybox.obj", true, true)
+        val ga_ov = loadOBJ("assets/models/game_over.obj", true, true)
 
         //Get the first mesh of the first object
 
@@ -211,6 +213,9 @@ class Scene(private val window: GameWindow) {
         var skyboxmesh = Mesh(cu.objects[0].meshes[0].vertexData,cu.objects[0].meshes[0].indexData,vertexAttributes,skyboxMaterial)
         skybox = Renderable(mutableListOf(skyboxmesh))
 
+        var gameovermesh = Mesh(ga_ov.objects[0].meshes[0].vertexData,ga_ov.objects[0].meshes[0].indexData,vertexAttributes, floorMaterial)
+        game_over = Renderable(mutableListOf(gameovermesh))
+
         //motorrad= ModelLoader.loadModel("assets/newship/AirShip.obj", 0f, Math.toRadians(180f), 0f)!!
         //motorrad= ModelLoader.loadModel("assets/ship/scene.obj", 0f, Math.toRadians(180f), 0f)!!
         //motorrad= ModelLoader.loadModel("assets/xwing/x-wing-flyingv1.obj", 0f, Math.toRadians(180f), 0f)!!
@@ -225,6 +230,8 @@ class Scene(private val window: GameWindow) {
         skybox.scale(Vector3f1(750f,750f,750f))
         skybox.parent = motorrad
 
+        game_over.translate(Vector3f1(-20f,0f,20f))
+        game_over.scale(Vector3f1(4f,4f,4f))
 
 
 
@@ -293,6 +300,8 @@ class Scene(private val window: GameWindow) {
         spotLight.bind(staticShader, camera.getCalculateViewMatrix())
 
         skybox.render(staticShader, Vector3f1(1f,1f,1.15f))
+
+        game_over.render(staticShader, Vector3f1(5f,1f,1f))
 
         motorrad.render(staticShader, Vector3f1(1.2f,1.2f,1.2f))
         //renderable.render(staticShader, Vector3f1(0f,1f,0f))
@@ -453,13 +462,31 @@ class Scene(private val window: GameWindow) {
             if (distance < 7.0f) {
                 iterator.remove()
                 asteroid.cleanup()
-
-                // Setze das Raumschiff an den Punkt des Spielstarts zurück
-                setSpaceshipPositionToStart()
+                
+                checkCollisionGameOver()
             }
         }
     }
 
+    private fun checkCollisionGameOver() {
+        pause = false
+
+        game_over.translate(Vector3f1(20f,0f,-20f))
+        game_over.scale(Vector3f1(10f,10f,10f))
+        game_over.translate(Vector3f1(-1.5f,0f,0.5f))
+        game_over.parent = motorrad
+
+        cleanup()
+
+
+
+        
+
+        // Setze das Raumschiff an den Punkt des Spielstarts zurück
+        //setSpaceshipPositionToStart()
+        //pause = true
+    }
+    
     private fun setSpaceshipPositionToStart() {
 
         motorrad.cleanup()
