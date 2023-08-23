@@ -26,6 +26,7 @@ import cga.framework.ModelLoader.loadModel
 import org.joml.*
 import org.joml.Math.acos
 import org.joml.Math.sqrt
+import org.joml.Vector3f
 import java.lang.StrictMath.pow
 import java.util.Random
 import kotlin.math.atan2
@@ -99,7 +100,7 @@ class Scene(private val window: GameWindow) {
     val lightPosition = Vector3f1(0f, 5f, 0f) // Anpassen der Lichtposition
     val lightColor = Vector3f1(0.11f, 0.11f, 0.11f) // Anpassen der Lichtfarbe (hier: Weiß)
 
-    val pointLight = PointLight(lightPosition, lightColor)
+    var pointLight = PointLight(lightPosition, lightColor)
 
     var pointLight2 = PointLight(Vector3f1(0f,1f,0f), Vector3f1(0.0f,0.0f,0.0f))
     val pointLight3 = PointLight(Vector3f1(15f, 5f, -15f), Vector3f1(0f,0.0f,40.0f))
@@ -247,7 +248,7 @@ class Scene(private val window: GameWindow) {
 
 
         skybox.translate(motorrad.getWorldPosition())
-        skybox.scale(Vector3f1(750f,750f,750f))
+        skybox.scale(Vector3f1(1850f,1850f,1850f))
         //skybox.parent = motorrad
 
         game_over.translate(Vector3f1(-20f,0f,20f))
@@ -295,7 +296,7 @@ class Scene(private val window: GameWindow) {
         pointLight2.parent = ray2
         pointLight.parent = motorrad
 
-        for(i in 1..50)//random asteroid spawn
+        for(i in 1..25)//random asteroid spawn
         {
             var rendertemp = ModelLoader.loadModel("assets/10464_Asteroid_L3.123c72035d71-abea-4a34-9131-5e9eeeffadcb/10464_Asteroid_v1_Iterations-2.obj", -1.5708f, 1.5708f, 0f)!!
             var ascale=Random().nextFloat(0.005f,0.01f)
@@ -309,6 +310,7 @@ class Scene(private val window: GameWindow) {
         astmesh= Mesh(astobj.objects[0].meshes[0].vertexData,astobj.objects[0].meshes[0].indexData,vertexAttributes,astmat)
 
     }
+
 
     fun render(dt: Float, t: Float) {
         glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
@@ -435,7 +437,17 @@ class Scene(private val window: GameWindow) {
         }
         }
     //println(asteroidlist.lastIndex.toString())
-
+        if(motorrad.getWorldPosition().x>=1700f||motorrad.getWorldPosition().y>=1700f||motorrad.getWorldPosition().z>=1700f||motorrad.getWorldPosition().x<=-1700f||motorrad.getWorldPosition().y<=-1700f||motorrad.getWorldPosition().z<=-1700f) {
+            pointLight = PointLight(Vector3f1(0f, 5f, 0f), Vector3f1(1f, 0f, 0f))
+            pointLight.parent = motorrad
+        }
+        else{
+            pointLight = PointLight(Vector3f1(0f, 5f, 0f), Vector3f1(0.11f, 0.11f, 0.11f))
+            pointLight.parent = motorrad
+        }
+        if(motorrad.getWorldPosition().x>=1800f||motorrad.getWorldPosition().y>=1800f||motorrad.getWorldPosition().z>=1800f||motorrad.getWorldPosition().x<=-1800f||motorrad.getWorldPosition().y<=-1800f||motorrad.getWorldPosition().z<=-1800f) {
+            setSpaceshipPositionToStart()
+        }
     }
 
     fun update(dt: Float, t: Float) {
@@ -601,7 +613,7 @@ class Scene(private val window: GameWindow) {
 
             val distance = shotPosition.distance(asteroidPosition)
             val distance2 = shotPosition2.distance(asteroidPosition)
-            if (distance < 8.0f||distance2 < 8.0f) {
+            if (distance < 10.0f||distance2 < 10.0f) {
                 iterator.remove()
                 asteroid.cleanup()
                 score+=500f
@@ -614,7 +626,7 @@ class Scene(private val window: GameWindow) {
 
             val distance = shotPosition.distance(asteroidPosition)
             val distance2 = shotPosition2.distance(asteroidPosition)
-            if (distance < 8.0f||distance2 < 8.0f) {
+            if (distance < 10.0f||distance2 < 10.0f) {
                 iterator2.remove()
                 asteroid.cleanup()
                 score+=500f
