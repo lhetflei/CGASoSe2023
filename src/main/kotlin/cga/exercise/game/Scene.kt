@@ -72,6 +72,14 @@ class Scene(private val window: GameWindow) {
     var motorrad = Renderable(meshlist)
     var skybox = Renderable(meshlist)
     var game_over = Renderable(meshlist)
+    var end_game = Renderable(meshlist)
+    var reset_game = Renderable(meshlist)
+    var challenge = Renderable(meshlist)
+    var dif_easy = Renderable(meshlist)
+    var dif_mid = Renderable(meshlist)
+    var dif_difc = Renderable(meshlist)
+    var menu_backg = Renderable(meshlist)
+
     var skyboxMaterial: Material
     var ray = Renderable(meshlist)
     var ray2 = Renderable(meshlist)
@@ -142,10 +150,19 @@ class Scene(private val window: GameWindow) {
 
         val res = loadOBJ("assets/models/ground.obj", true, true)
         val cu = loadOBJ("assets/models/skybox.obj", true, true)
-        val ga_ov = loadOBJ("assets/models/game_over.obj", true, true)
+
+        //Menu
+        val end = loadOBJ("assets/models/menu/beenden.obj", true, true)
+        val ga_ov = loadOBJ("assets/models/menu/game_over.obj", true, true)
+        val easy = loadOBJ("assets/models/menu/leicht.obj", true, true)
+        val mid = loadOBJ("assets/models/menu/mittel.obj", true, true)
+        val difc = loadOBJ("assets/models/menu/schwer.obj", true, true)
+        val reset = loadOBJ("assets/models/menu/neustart.obj", true, true)
+        val chall = loadOBJ("assets/models/menu/schwierigkeitsgrad.obj", true, true)
+        val back = loadOBJ("assets/models/menu/menu_background.obj", true, true)
+
 
         //Get the first mesh of the first object
-
         val objMesh = res.objects[0].meshes[0]
         val objres = loadOBJ("assets/models/sphere.obj", true, true)
         val objsphereMesh = objres.objects[0].meshes[0]
@@ -197,14 +214,16 @@ class Scene(private val window: GameWindow) {
 
         val spec = Texture2D("assets/textures/ground_diff.png", true)
         val ground = Texture2D("assets/textures/ground_emit.png", true)
-        val diff =Texture2D("assets/textures/ground_diff.png", true)
+        val diff = Texture2D("assets/textures/ground_diff.png", true)
         var skyboxMat = Texture2D("assets/textures/skybox.png", true)
         var raytex = Texture2D("assets/textures/ground_diff.png", true)
+        var fontMat = Texture2D("assets/textures/skybox.png", true)
+        var backMat = Texture2D("assets/textures/ground_diff.png", true)
+
 
         ground.bind(0)
         ground.setTexParams(GL_REPEAT, GL_REPEAT, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR)
         ground.unbind()
-
 
 
         val floorMaterial = Material(
@@ -234,8 +253,17 @@ class Scene(private val window: GameWindow) {
         var skyboxmesh = Mesh(cu.objects[0].meshes[0].vertexData,cu.objects[0].meshes[0].indexData,vertexAttributes,skyboxMaterial)
         skybox = Renderable(mutableListOf(skyboxmesh))
 
-        var gameovermesh = Mesh(ga_ov.objects[0].meshes[0].vertexData,ga_ov.objects[0].meshes[0].indexData,vertexAttributes, floorMaterial)
-        game_over = Renderable(mutableListOf(gameovermesh))
+        //Menu
+        var menu_backMesh = Mesh(back.objects[0].meshes[0].vertexData,back.objects[0].meshes[0].indexData,vertexAttributes, floorMaterial)
+        menu_backg = Renderable(mutableListOf(menu_backMesh))
+        var menu_overMesh = Mesh(ga_ov.objects[0].meshes[0].vertexData,ga_ov.objects[0].meshes[0].indexData,vertexAttributes, skyboxMaterial)
+        game_over = Renderable(mutableListOf(menu_overMesh))
+
+
+
+
+        //var gameovermesh = Mesh(ga_ov.objects[0].meshes[0].vertexData,ga_ov.objects[0].meshes[0].indexData,vertexAttributes, floorMaterial)
+        //game_over = Renderable(mutableListOf(gameovermesh))
 
         //motorrad= ModelLoader.loadModel("assets/newship/AirShip.obj", 0f, Math.toRadians(180f), 0f)!!
         //motorrad= ModelLoader.loadModel("assets/ship/scene.obj", 0f, Math.toRadians(180f), 0f)!!
@@ -251,9 +279,11 @@ class Scene(private val window: GameWindow) {
         skybox.scale(Vector3f1(1850f,1850f,1850f))
         //skybox.parent = motorrad
 
+        //Menu
+        menu_backg.translate(Vector3f1(-20f,0f,20f))
+        menu_backg.scale(Vector3f1(1f,1f,1f))
         game_over.translate(Vector3f1(-20f,0f,20f))
-        game_over.scale(Vector3f1(4f,4f,4f))
-
+        game_over.scale(Vector3f1(0.06f,0.06f,0.06f))
 
 
         renderable3 = ModelLoader.loadModel("assets/Moon_3D_Model/moon.obj", -1.5708f, 1.5708f, 0f)!!
@@ -266,6 +296,8 @@ class Scene(private val window: GameWindow) {
         renderable.scale(Vector3f1(25.7f, 25.7f, 25.7f))
         pointLight5.parent=renderable3
 
+
+        //Laser
         var ras = loadOBJ("assets/models/newscene.obj",true,true)
         var raymesh = Mesh(ras.objects[0].meshes[0].vertexData,ras.objects[0].meshes[0].indexData,vertexAttributes,rayMaterial)
         ray = Renderable(mutableListOf(raymesh))
@@ -274,6 +306,7 @@ class Scene(private val window: GameWindow) {
         ray.translate(Vector3f1(0f,0f,0f))
         ray.rotate(-1.5708f,1.5708f,0f)
 
+        //2.Laser
         var ras2 = loadOBJ("assets/models/newscene.obj",true,true)
         var raymesh2 = Mesh(ras.objects[0].meshes[0].vertexData,ras.objects[0].meshes[0].indexData,vertexAttributes,rayMaterial)
         ray2 = Renderable(mutableListOf(raymesh2))
@@ -331,6 +364,8 @@ class Scene(private val window: GameWindow) {
 
         skybox.render(staticShader, Vector3f1(1f,1f,1.15f))
 
+        //Menu
+        menu_backg.render(staticShader, Vector3f1(1f,1f,2f))
         game_over.render(staticShader, Vector3f1(5f,1f,1f))
 
         motorrad.render(staticShader, Vector3f1(1.2f,1.2f,1.2f))
@@ -558,6 +593,7 @@ class Scene(private val window: GameWindow) {
                 asteroid.cleanup()
 
                 // Setze das Raumschiff an den Punkt des Spielstarts zurück
+                //checkCollisionGameOver()
                 setSpaceshipPositionToStart()
             }
         }
@@ -566,14 +602,13 @@ class Scene(private val window: GameWindow) {
     private fun checkCollisionGameOver() {
         pause = false
 
+        menu_backg.translate(Vector3f1(20f,0f,-20f))
+        menu_backg.translate(Vector3f1(-15f,0f,5f))
         game_over.translate(Vector3f1(20f,0f,-20f))
-        game_over.scale(Vector3f1(10f,10f,10f))
-        game_over.translate(Vector3f1(-1.5f,0f,0.5f))
+        game_over.translate(Vector3f1(-15f,0f,5f))
         game_over.parent = motorrad
 
         cleanup()
-
-
 
         
 
