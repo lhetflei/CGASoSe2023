@@ -27,6 +27,7 @@ import org.joml.*
 import org.joml.Math.acos
 import org.joml.Math.sqrt
 import org.joml.Vector3f
+import org.lwjgl.glfw.Callbacks
 import java.lang.StrictMath.pow
 import java.util.Random
 import kotlin.math.atan2
@@ -44,6 +45,10 @@ class Scene(private val window: GameWindow) {
     //private val simpleMesh: Mesh
     //private val sphereMesh: Mesh
     private val groundMesh: Mesh
+    var light_on = false
+    var light_last = 0f
+    val light_int = 0.35f
+    var b_menu = false
     var astmesh: Mesh
     var vmaxa=0.01f
     var vmaxa2=0.0001f
@@ -80,7 +85,7 @@ class Scene(private val window: GameWindow) {
     var dif_difc = Renderable(meshlist)
     var menu_backg = Renderable(meshlist)
 
-    var skyboxMaterial: Material
+    //var skyboxMaterial: Material
     var ray = Renderable(meshlist)
     var ray2 = Renderable(meshlist)
     var ast = Renderable(meshlist)
@@ -215,10 +220,12 @@ class Scene(private val window: GameWindow) {
         val spec = Texture2D("assets/textures/ground_diff.png", true)
         val ground = Texture2D("assets/textures/ground_emit.png", true)
         val diff = Texture2D("assets/textures/ground_diff.png", true)
-        var skyboxMat = Texture2D("assets/textures/skybox.png", true)
+        var skybox_emit = Texture2D("assets/textures/skybox.png", true)
         var raytex = Texture2D("assets/textures/ground_diff.png", true)
-        var fontMat = Texture2D("assets/textures/skybox.png", true)
-        var backMat = Texture2D("assets/textures/ground_diff.png", true)
+        var fontMat = Texture2D("assets/textures/menu_font.png", true)
+        var back_emit = Texture2D("assets/textures/menu_back.png", true)
+        var back_diff = Texture2D("assets/textures/menu_back_diff.png", true)
+        //var back_spec = Texture2D("assets/textures/menu_back_spec.png", true)
 
 
         ground.bind(0)
@@ -242,7 +249,31 @@ class Scene(private val window: GameWindow) {
             600.0f,
             Vector2f(1.0f, 1.0f)
         )
-        skyboxMaterial = Material(diff, skyboxMat, spec, 60f, Vector2f(1.0f, 1.0f))
+        val BackgroundMaterial = Material(
+
+                back_diff,
+                back_emit,
+                back_diff,
+                60.0f,
+                Vector2f(1.0f, 1.0f)
+        )
+        val FontMaterial = Material(
+
+                diff,
+                fontMat,
+                spec,
+                60.0f,
+                Vector2f(1.0f, 1.0f)
+        )
+        val skyboxMaterial = Material(
+
+                diff,
+                skybox_emit,
+                spec,
+                60.0f,
+                Vector2f(1.0f, 1.0f)
+        )
+        //skyboxMaterial = Material(diff, skyboxMat, spec, 60f, Vector2f(1.0f, 1.0f))
 
         //floorMaterial.bind(staticShader)
 
@@ -250,14 +281,28 @@ class Scene(private val window: GameWindow) {
 
         groundMesh = Mesh(objMesh.vertexData, objMesh.indexData, vertexAttributes, floorMaterial)
 
+        //Skybox
         var skyboxmesh = Mesh(cu.objects[0].meshes[0].vertexData,cu.objects[0].meshes[0].indexData,vertexAttributes,skyboxMaterial)
         skybox = Renderable(mutableListOf(skyboxmesh))
 
         //Menu
-        var menu_backMesh = Mesh(back.objects[0].meshes[0].vertexData,back.objects[0].meshes[0].indexData,vertexAttributes, floorMaterial)
+        var menu_backMesh = Mesh(cu.objects[0].meshes[0].vertexData,cu.objects[0].meshes[0].indexData,vertexAttributes, BackgroundMaterial)
         menu_backg = Renderable(mutableListOf(menu_backMesh))
+        var menu_overMesh = Mesh(ga_ov.objects[0].meshes[0].vertexData,ga_ov.objects[0].meshes[0].indexData,vertexAttributes, FontMaterial)
+        game_over = Renderable(mutableListOf(menu_overMesh))
+        var menu_reset = Mesh(reset.objects[0].meshes[0].vertexData,reset.objects[0].meshes[0].indexData,vertexAttributes, FontMaterial)
+        reset_game = Renderable(mutableListOf(menu_reset))
+        var menu_end = Mesh(end.objects[0].meshes[0].vertexData,end.objects[0].meshes[0].indexData,vertexAttributes, FontMaterial)
+        end_game = Renderable(mutableListOf(menu_end))
+
+        /*var menu_overMesh = Mesh(ga_ov.objects[0].meshes[0].vertexData,ga_ov.objects[0].meshes[0].indexData,vertexAttributes, skyboxMaterial)
+        game_over = Renderable(mutableListOf(menu_overMesh))
         var menu_overMesh = Mesh(ga_ov.objects[0].meshes[0].vertexData,ga_ov.objects[0].meshes[0].indexData,vertexAttributes, skyboxMaterial)
         game_over = Renderable(mutableListOf(menu_overMesh))
+        var menu_overMesh = Mesh(ga_ov.objects[0].meshes[0].vertexData,ga_ov.objects[0].meshes[0].indexData,vertexAttributes, skyboxMaterial)
+        game_over = Renderable(mutableListOf(menu_overMesh))*/
+
+
 
 
 
@@ -279,11 +324,26 @@ class Scene(private val window: GameWindow) {
         skybox.scale(Vector3f1(1850f,1850f,1850f))
         //skybox.parent = motorrad
 
+
         //Menu
-        menu_backg.translate(Vector3f1(-20f,0f,20f))
-        menu_backg.scale(Vector3f1(1f,1f,1f))
-        game_over.translate(Vector3f1(-20f,0f,20f))
-        game_over.scale(Vector3f1(0.06f,0.06f,0.06f))
+        //Background
+        menu_backg.translate(Vector3f1(0f,0f,-43.5f))
+        menu_backg.scale(Vector3f1(30f,30f,3f))
+        menu_backg.translate(Vector3f1(0f,250f,0f))
+        //Game Over
+        game_over.translate(Vector3f1(0f,17f,-40f))
+        game_over.scale(Vector3f1(22f,22f,22f))
+        game_over.translate(Vector3f1(0f,250f,0f))
+        //Reset
+        reset_game.translate(Vector3f1(0f,0f,-40f))
+        reset_game.scale(Vector3f1(15f,15f,15f))
+        reset_game.translate(Vector3f1(0f,250f,0f))
+        //End
+        end_game.translate(Vector3f1(0f,-15f,-40f))
+        end_game.scale(Vector3f1(15f,15f,15f))
+        end_game.translate(Vector3f1(0f,250f,0f))
+
+
 
 
         renderable3 = ModelLoader.loadModel("assets/Moon_3D_Model/moon.obj", -1.5708f, 1.5708f, 0f)!!
@@ -365,8 +425,10 @@ class Scene(private val window: GameWindow) {
         skybox.render(staticShader, Vector3f1(1f,1f,1.15f))
 
         //Menu
-        menu_backg.render(staticShader, Vector3f1(1f,1f,2f))
-        game_over.render(staticShader, Vector3f1(5f,1f,1f))
+        menu_backg.render(staticShader, Vector3f1(1f,1f,1f))
+        game_over.render(staticShader, Vector3f1(1f,1f,1f))
+        reset_game.render(staticShader, Vector3f1(1f,1f,1f))
+        end_game.render(staticShader, Vector3f1(1f,1f,1f))
 
         motorrad.render(staticShader, Vector3f1(1.2f,1.2f,1.2f))
         //renderable.render(staticShader, Vector3f1(0f,1f,0f))
@@ -473,8 +535,26 @@ class Scene(private val window: GameWindow) {
         }
     //println(asteroidlist.lastIndex.toString())
         if(motorrad.getWorldPosition().x>=1700f||motorrad.getWorldPosition().y>=1700f||motorrad.getWorldPosition().z>=1700f||motorrad.getWorldPosition().x<=-1700f||motorrad.getWorldPosition().y<=-1700f||motorrad.getWorldPosition().z<=-1700f) {
-            pointLight = PointLight(Vector3f1(0f, 5f, 0f), Vector3f1(1f, 0f, 0f))
-            pointLight.parent = motorrad
+            //pointLight = PointLight(Vector3f1(0f, 5f, 0f), Vector3f1(1f, 0f, 0f))
+            //pointLight.parent = motorrad
+
+            //Flashing
+            light_last += dt
+
+            if (light_last >= light_int){
+                light_on = !light_on
+                light_last = 0f
+
+                if (light_on) {
+                    pointLight = PointLight(Vector3f1(0f, 5f, 0f), Vector3f1(1f, 0f, 0f))
+                    pointLight.parent = motorrad
+                }
+                else {
+                    pointLight.parent = null
+                }
+            }
+
+
         }
         else{
             pointLight = PointLight(Vector3f1(0f, 5f, 0f), Vector3f1(0.11f, 0.11f, 0.11f))
@@ -488,12 +568,15 @@ class Scene(private val window: GameWindow) {
     fun update(dt: Float, t: Float) {
         collisionCheckTimer += dt
         checkCollisionSpaceship()
+        if (b_menu ==true)
+            checkCollisionMenu()
         if(shoot==true)
-        checkCollisionAsteroid()
+            checkCollisionAsteroid()
         if (collisionCheckTimer >= collisionCheckInterval) {
             checkCollisionSpaceship()
             if(shoot==true)
             checkCollisionAsteroid()
+            //checkCollisionMenu()
             collisionCheckTimer = 0f // Setze den Timer zurück
         }
 
@@ -534,7 +617,7 @@ class Scene(private val window: GameWindow) {
             }
             staticShader.setUniform("shader",tempshader)
         }
-        if (window.getKeyState(GLFW_KEY_ESCAPE) == true) {
+        if (window.getKeyState(GLFW_KEY_N) == true) {
             //pause
         }
         if (window.getKeyState(GLFW_KEY_P) == true) {
@@ -579,7 +662,7 @@ class Scene(private val window: GameWindow) {
                 iterator.remove()
                 asteroid.cleanup()
                 
-                checkCollisionGameOver()
+                GoTo_Menu()
             }
         }
         while (iterator2.hasNext()) {
@@ -593,28 +676,67 @@ class Scene(private val window: GameWindow) {
                 asteroid.cleanup()
 
                 // Setze das Raumschiff an den Punkt des Spielstarts zurück
-                //checkCollisionGameOver()
-                setSpaceshipPositionToStart()
+                GoTo_Menu()
             }
         }
     }
 
-    private fun checkCollisionGameOver() {
+    private fun GoTo_Menu() {
+        //Pause / Clean Asteroids
         pause = false
-
-        menu_backg.translate(Vector3f1(20f,0f,-20f))
-        menu_backg.translate(Vector3f1(-15f,0f,5f))
-        game_over.translate(Vector3f1(20f,0f,-20f))
-        game_over.translate(Vector3f1(-15f,0f,5f))
-        game_over.parent = motorrad
-
         cleanup()
 
-        
+        //Get to the menu
+        menu_backg.translate(Vector3f1(0f,-250f,0f))
+        game_over.translate(Vector3f1(0f,-250f,0f))
+        reset_game.translate(Vector3f1(0f,-250f,0f))
+        end_game.translate(Vector3f1(0f,-250f,0f))
+        motorrad.cleanup()
+        motorrad= ModelLoader.loadModel("assets/starsparrow/StarSparrow01.obj", 0f, Math.toRadians(180f), 0f)!!
+        camera.parent = motorrad
+        motorrad.scale(Vector3f1(0.8f, 0.8f, 0.8f))
+        motorrad.translate(initialSpaceshipPosition)
+        spotLight.parent = motorrad
+        ray.parent = motorrad
+        ray2.parent=motorrad
+        pointLight4.parent = ray
+        pointLight2.parent = ray2
+        pointLight.parent = motorrad
 
-        // Setze das Raumschiff an den Punkt des Spielstarts zurück
-        //setSpaceshipPositionToStart()
-        //pause = true
+        b_menu = true
+
+        //checkCollisionMenu()
+    }
+    private fun checkCollisionMenu(){
+
+            val shotPosition = ray.getWorldPosition()
+            val shotPosition2 = ray2.getWorldPosition()
+            val check_end = end_game.getWorldPosition()
+            val check_reset = reset_game.getWorldPosition()
+
+            val end_distance = shotPosition.distance(check_end)
+            val end_distance2 = shotPosition2.distance(check_end)
+            val reset_distance = shotPosition.distance(check_reset)
+            val reset_distance2 = shotPosition2.distance(check_reset)
+
+
+            if (end_distance < 3.0f||end_distance2 < 3.0f) {
+                b_menu = false
+                org.lwjgl.glfw.GLFW.glfwDestroyWindow(1)
+            }
+            if (reset_distance < 3.0f||reset_distance2 < 3.0f) {
+
+                setSpaceshipPositionToStart()
+                pause = true
+                b_menu = false
+
+                menu_backg.translate(Vector3f1(0f,250f,0f))
+                game_over.translate(Vector3f1(0f,250f,0f))
+                reset_game.translate(Vector3f1(0f,250f,0f))
+                end_game.translate(Vector3f1(0f,250f,0f))
+
+            }
+        //}
     }
     
     private fun setSpaceshipPositionToStart() {
@@ -717,6 +839,10 @@ class Scene(private val window: GameWindow) {
     private fun setSpaceshipPosition(position: Vector3f1) {
         currentSpaceshipPosition.set(position)
         motorrad.translate(currentSpaceshipPosition)
+    }
+
+    fun F_Light() {
+
     }
 
     /**
