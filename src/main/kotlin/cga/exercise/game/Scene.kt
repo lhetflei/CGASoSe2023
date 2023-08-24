@@ -472,9 +472,14 @@ class Scene(private val window: GameWindow) {
         }
         if (window.getKeyState(GLFW_KEY_B) == true) {
 
-            //tmpcamera = camera
-            camera = camera_fp
-
+            if(camselect==0f) {
+                camera.translate(Vector3f1(0f,1f,-13f))
+                camselect=1f
+            }
+            else{
+                camera.translate(Vector3f1(0f,-1f,13f))
+                camselect=0f
+            }
         }
         if (window.getKeyState(GLFW_KEY_LEFT_SHIFT) == true) {
 
