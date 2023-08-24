@@ -27,6 +27,7 @@ class Scene(private val window: GameWindow) {
     private val staticShader: ShaderProgram = ShaderProgram("assets/shaders/tron_vert.glsl", "assets/shaders/tron_frag.glsl")
 
     private var camera: TronCamera
+    private var camera_fp: TronCamera
     var light_on = false
     var light_last = 0f
     val light_int = 0.35f
@@ -50,13 +51,12 @@ class Scene(private val window: GameWindow) {
     var renderable = Renderable(meshlist)
     var renderable2 = Renderable(meshlist)
     var Moon = Renderable(meshlist)
-    var sun = Renderable(meshlist)
+    var Moon2 = Renderable(meshlist)
     var spaceship = Renderable(meshlist)
     var skybox = Renderable(meshlist)
     var game_over = Renderable(meshlist)
     var end_game = Renderable(meshlist)
     var reset_game = Renderable(meshlist)
-    var menu_backg = Renderable(meshlist)
 
     var ray = Renderable(meshlist)
     var ray2 = Renderable(meshlist)
@@ -101,35 +101,24 @@ class Scene(private val window: GameWindow) {
 
     //scene setup
     init {
-        //1.2.3 haus
-        val vertices = floatArrayOf(
-            -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
-            0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
-            0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
-            0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-            -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f
-        )
-
-        val indices = intArrayOf(
-            0, 1, 2,
-            0, 2, 4,
-            4, 2, 3
-        )
 
         camera = TronCamera()
         camera.rotate(-0.110865f,0f,0f)
         camera.translate(Vector3f1(0.0f, 0.0f, 14.0f))
 
+        camera_fp = TronCamera()
+        camera_fp.rotate(-0.610865f,0f,0f)
+        camera_fp.translate(Vector3f1(0.0f, 3f, -5f))
 
 
 
 
 
+        //Skybox
         val cu = loadOBJ("assets/models/skybox.obj", true, true)
         //Menu
         val end = loadOBJ("assets/models/menu/beenden.obj", true, true)
         val ga_ov = loadOBJ("assets/models/menu/game_over.obj", true, true)
-
         val reset = loadOBJ("assets/models/menu/neustart.obj", true, true)
 
         enableDepthTest(GL_LESS) //Tiefentest, werden Pixel in der richtigen Reihenfolge gerendert
@@ -137,14 +126,15 @@ class Scene(private val window: GameWindow) {
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f); GLError.checkThrow() //schwarze hintergrundfarbe, alpha1.0f völlige deckkraft
 
         val spec = Texture2D("assets/textures/ground_diff.png", true)
-        val ground = Texture2D("assets/textures/ground_emit.png", true)
         val diff = Texture2D("assets/textures/ground_diff.png", true)
         var skybox_emit = Texture2D("assets/textures/skybox.png", true)
         var raytex = Texture2D("assets/textures/ground_diff.png", true)
         var fontMat = Texture2D("assets/textures/menu_font.png", true)
-        var back_emit = Texture2D("assets/textures/menu_back.png", true)
-        var back_diff = Texture2D("assets/textures/menu_back_diff.png", true)
 
+
+        fontMat.bind(0)
+        fontMat.setTexParams(GL_CLAMP, GL_CLAMP, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR)
+        fontMat.unbind()
 
 
         val rayMaterial = Material(
@@ -154,14 +144,6 @@ class Scene(private val window: GameWindow) {
             raytex,
             600.0f,
             Vector2f(1.0f, 1.0f)
-        )
-        val BackgroundMaterial = Material(
-
-                back_diff,
-                back_emit,
-                back_diff,
-                60.0f,
-                Vector2f(1.0f, 1.0f)
         )
         val FontMaterial = Material(
 
@@ -173,9 +155,9 @@ class Scene(private val window: GameWindow) {
         )
         val skyboxMaterial = Material(
 
-                diff,
                 skybox_emit,
-                spec,
+                skybox_emit,
+                skybox_emit,
                 60.0f,
                 Vector2f(1.0f, 1.0f)
         )
@@ -186,8 +168,7 @@ class Scene(private val window: GameWindow) {
         skybox = Renderable(mutableListOf(skyboxmesh))
 
         //Menu
-        var menu_backMesh = Mesh(cu.objects[0].meshes[0].vertexData,cu.objects[0].meshes[0].indexData,vertexAttributes, BackgroundMaterial)
-        menu_backg = Renderable(mutableListOf(menu_backMesh))
+        Moon2 = ModelLoader.loadModel("assets/Moon_3D_Model/moon.obj", -1.5708f, 1.5708f, 0f)!!
         var menu_overMesh = Mesh(ga_ov.objects[0].meshes[0].vertexData,ga_ov.objects[0].meshes[0].indexData,vertexAttributes, FontMaterial)
         game_over = Renderable(mutableListOf(menu_overMesh))
         var menu_reset = Mesh(reset.objects[0].meshes[0].vertexData,reset.objects[0].meshes[0].indexData,vertexAttributes, FontMaterial)
@@ -199,6 +180,12 @@ class Scene(private val window: GameWindow) {
         spaceship= ModelLoader.loadModel("assets/starsparrow/StarSparrow01.obj", 0f, Math.toRadians(180f), 0f)!!
 
         camera.parent = spaceship
+        camera_fp.parent = spaceship
+        spaceship.scale(Vector3f1(0.8f, 0.8f, 0.8f))
+        spaceship.translate(initialSpaceshipPosition)
+
+
+        skybox.translate(spaceship.getWorldPosition())
         spaceship.scale(Vector3f1(0.8f, 0.8f, 0.8f))
         spaceship.translate(initialSpaceshipPosition)
 
@@ -208,11 +195,10 @@ class Scene(private val window: GameWindow) {
 
 
 
-        //Menu
         //Background
-        menu_backg.translate(Vector3f1(0f,0f,-43.5f))
-        menu_backg.scale(Vector3f1(30f,30f,3f))
-        menu_backg.translate(Vector3f1(0f,250f,0f))
+        Moon2.translate(Vector3f1(0f,0f,-100f))
+        Moon2.scale(Vector3f1(4f,4f,4f))
+        Moon2.translate(Vector3f1(0f,1000f,0f))
         //Game Over
         game_over.translate(Vector3f1(0f,17f,-40f))
         game_over.scale(Vector3f1(22f,22f,22f))
@@ -225,7 +211,6 @@ class Scene(private val window: GameWindow) {
         end_game.translate(Vector3f1(0f,-15f,-40f))
         end_game.scale(Vector3f1(15f,15f,15f))
         end_game.translate(Vector3f1(0f,250f,0f))
-
 
 
         Moon = ModelLoader.loadModel("assets/Moon_3D_Model/moon.obj", -1.5708f, 1.5708f, 0f)!!
@@ -294,15 +279,14 @@ class Scene(private val window: GameWindow) {
         skybox.render(staticShader, Vector3f1(1f,1f,1.15f))
 
         //Menu
-        menu_backg.render(staticShader, Vector3f1(1f,1f,1f))
-        game_over.render(staticShader, Vector3f1(1f,1f,1f))
-        reset_game.render(staticShader, Vector3f1(1f,1f,1f))
-        end_game.render(staticShader, Vector3f1(1f,1f,1f))
+        //menu_backg.render(staticShader, Vector3f1(2f,2f,2f))
+        game_over.render(staticShader, Vector3f1(2f,2f,2f))
+        reset_game.render(staticShader, Vector3f1(2f,1f,2f))
+        end_game.render(staticShader, Vector3f1(2f,2f,2f))
 
         spaceship.render(staticShader, Vector3f1(1.2f,1.2f,1.2f))
         Moon.render(staticShader, Vector3f1(1f,1f,1f))
-        sun.render(staticShader,Vector3f1(1f,1f,1f))
-        Moon.render(staticShader, Vector3f1(0.1f,0.1f,0.1f))
+        Moon2.render(staticShader, Vector3f1(1f,1f,1f))
 
 
         if(shoot2==true){
@@ -486,6 +470,12 @@ class Scene(private val window: GameWindow) {
             else
                 cammode=0
         }
+        if (window.getKeyState(GLFW_KEY_B) == true) {
+
+            //tmpcamera = camera
+            camera = camera_fp
+
+        }
         if (window.getKeyState(GLFW_KEY_LEFT_SHIFT) == true) {
 
             if(speed>=-0.5f)
@@ -515,7 +505,6 @@ class Scene(private val window: GameWindow) {
             if (distance < 7.0f) {
                 iterator.remove()
                 asteroid.cleanup()
-                
                 GoTo_Menu()
             }
         }
@@ -528,8 +517,6 @@ class Scene(private val window: GameWindow) {
             if (distance < 12.0f) {
                 iterator2.remove()
                 asteroid.cleanup()
-
-                // Setze das Raumschiff an den Punkt des Spielstarts zurück
                 GoTo_Menu()
             }
         }
@@ -541,7 +528,8 @@ class Scene(private val window: GameWindow) {
         cleanup()
 
         //Get to the menu
-        menu_backg.translate(Vector3f1(0f,-250f,0f))
+
+        Moon2.translate(Vector3f1(0f,-1000f,0f))
         game_over.translate(Vector3f1(0f,-250f,0f))
         reset_game.translate(Vector3f1(0f,-250f,0f))
         end_game.translate(Vector3f1(0f,-250f,0f))
@@ -558,8 +546,6 @@ class Scene(private val window: GameWindow) {
         pointLight.parent = spaceship
 
         b_menu = true
-
-        //checkCollisionMenu()
     }
     private fun checkCollisionMenu(){
 
@@ -576,7 +562,7 @@ class Scene(private val window: GameWindow) {
 
             if (end_distance < 3.0f||end_distance2 < 3.0f) {
                 b_menu = false
-                org.lwjgl.glfw.GLFW.glfwDestroyWindow(1)
+                glfwDestroyWindow(1)
             }
             if (reset_distance < 3.0f||reset_distance2 < 3.0f) {
 
@@ -584,10 +570,10 @@ class Scene(private val window: GameWindow) {
                 pause = true
                 b_menu = false
 
-                menu_backg.translate(Vector3f1(0f,250f,0f))
                 game_over.translate(Vector3f1(0f,250f,0f))
                 reset_game.translate(Vector3f1(0f,250f,0f))
                 end_game.translate(Vector3f1(0f,250f,0f))
+                Moon2.translate(Vector3f1(0f,250f,0f))
                 setSpaceshipPositionToStart()
             }
         //}
