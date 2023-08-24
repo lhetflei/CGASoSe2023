@@ -251,7 +251,7 @@ class Scene(private val window: GameWindow) {
         ray2.translate(Vector3f1(0f,0f,0f))
         ray2.rotate(-1.5708f,1.5708f,0f)
 
-        spotLight.rotate(Math.toRadians(-5f),0f,0f)
+        spotLight.rotate(Math.toRadians(-2f),0f,0f)
         spotLight.parent = spaceship
         ray.parent = spaceship
         ray2.parent=spaceship
